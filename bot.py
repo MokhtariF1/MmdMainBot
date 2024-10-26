@@ -3143,24 +3143,40 @@ async def serv_info_get(event):
         except KeyError:
 
             service_name = config.three_member_names[service_num]
-
+    url = f"{config.API_ADDRESS}client-info?username={username}"
+    r = await event.reply("درحال دریافت اطلاعات...")
+    response = requests.get(url)
+    await bot.delete_messages(user_id, r.id)
+    response = response.json()
+    is_active = None
+    if response['is_active'] is False:
+        is_active = "غیر فعال"
+    else:
+        is_active = "فعال"
     full_text = f"""
+🌿 نام سرویس: {service_name}
 
-    ⚡️ اطلاعات حساب کاربری شما عبارت است از:
-
-    username: {username}
-
-    password: {password}
+وضعیت: {is_active}
 
 
+📌 شما میتوانید با استفاده از دکمه های زیر سرویس خود را مدیریت کنید
 
-    📌 مشخصات حساب کاربری شما نیز به قرار زیر است:
-
-
-
-    نوع سرویس: {service_name}"""
-
-    await event.reply(full_text)
+🆔 @SpeedConnectbot"""
+    keys = [
+        [
+            Button.inline("مشخصات سرویس", str.encode("sr_inf:" + str(random_num)))
+        ],
+        [
+            Button.inline("افراد متصل", str.encode("sr_pep:" + str(random_num)))
+        ],
+        [
+            Button.inline("دریافت لینک ساب v2ray", str.encode("sr_vl:" + str(random_num)))
+        ],
+        [
+            Button.inline("دریافت خروجی اوتلاین", str.encode("sr_ot:" + str(random_num)))
+        ],
+    ]
+    await event.reply(full_text, buttons=keys)
 
 @bot.on(events.CallbackQuery(data=b'android_help'))
 
