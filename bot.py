@@ -3424,7 +3424,7 @@ async def sr_extension(event):
 
         return
     async with bot.conversation(user_id, timeout=1000) as conv:
-        await conv.send_message(user_id, bot_text["enter_service_username"])
+        await conv.send_message(bot_text["enter_service_username"])
         username = await conv.get_response()
         if username.raw_text is None or username.raw_text == bot_text["back"]:
             return
