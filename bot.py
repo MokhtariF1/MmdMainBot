@@ -3450,7 +3450,7 @@ async def sr_extension(event):
                         await conv.send_message(bot_text["password_invalid"])
                         return
                     else:
-                        find_service = cur.execute(f"SELECT * FROM services WHERE username={service_username}").fetchone()
+                        find_service = cur.execute(f"SELECT * FROM services WHERE username='{service_username}'").fetchone()
                         if find_service is None:
                             await conv.send_message(bot_text["service_not_found"])
                             return
