@@ -3165,10 +3165,10 @@ async def serv_info_get(event):
 🆔 @SpeedConnectbot"""
     keys = [
         [
-            Button.inline("مشخصات سرویس", str.encode("sr_inf:" + str(random_num)))
+            Button.inline("مشخصات سرویس", str.encode("sr_inf:" + str(username)))
         ],
         [
-            Button.inline("افراد متصل", str.encode("sr_pep:" + str(random_num)))
+            Button.inline("افراد متصل", str.encode("sr_pep:" + str(username)))
         ],
         [
             Button.inline("دریافت لینک ساب v2ray", str.encode("sr_vl:" + str(username)))
@@ -3765,5 +3765,19 @@ async def sr_ot(event):
 {sub_link}
 """
     await event.reply(text)
+@bot.on(events.CallbackQuery(pattern="sr_inf:")))
+async def sr_inf(event):
+    username = event.data.decode().split(":")[1]
+    url = f"{config.API_ADDRESS}client-info?username={username}"
+    response = requests.get(url=url)
+    response = response.json()
+    keys = [
+        [Button.inline("نام"), Button.inline(username)],
+        [Button.inline("انقضا"), Button.inline(response["info"]["expire_date"])],
+        [
+            Button.inline("مصرف کلی"), Button.inline(response["info"]["used_traffic"])
+        ],
+    ]
+    await event.reply("مشخصات سرویس", buttons=keys)
 bot.run_until_disconnected()
 
