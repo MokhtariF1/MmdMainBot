@@ -3057,7 +3057,7 @@ async def yes_wallet(event):
             [Button.inline(service_time), Button.inline("زمان سرویس")],
             [Button.inline(service_value), Button.inline("حجم سرویس")]
         ]
-        await event.reply(full_text, key)
+        await event.reply(full_text, buttons=key)
 
         username_sms = config.sms_username
 
