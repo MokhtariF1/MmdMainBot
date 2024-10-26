@@ -3431,7 +3431,7 @@ async def sr_extension(event):
         else:
             username = username.raw_text
             url = f"{config.API_ADDRESS}client-info?username={username}"
-            response = requests.post(url)
+            response = requests.get(url)
             print(response)
             if response.status_code != 200:
                 await conv.send_message(bot_text["service_not_found"])
