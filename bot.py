@@ -55,13 +55,6 @@ bot_text = config.TEXT
 back = Button.text(bot_text["back"], resize=1)
 
 home_keys = [
-
-    [
-
-        Button.text(bot_text["new_service"]),
-
-    ],
-
     [
 
         Button.text(bot_text["test_account"]),
@@ -70,15 +63,21 @@ home_keys = [
 
     [
 
-        Button.text(bot_text["wallet"]),
+        Button.text(bot_text["new_service"]),
+        Button.text(bot_text["service_extension"]),
+    ],
 
-        Button.text(bot_text["get_buy"]),
+
+    [
+
+        Button.text(bot_text["wallet"]),
+        Button.text(bot_text["my_services"]),
 
     ],
 
     [
 
-        Button.text(bot_text["my_services"]),
+        Button.text(bot_text["get_buy"]),
 
         Button.text(bot_text["account"]),
 
@@ -95,42 +94,41 @@ admin_keys = [
 
     [
 
-        Button.text(bot_text["panel"]),
-
-    ],
-
-    [
-
-        Button.text(bot_text["new_service"]),
-
-    ],
-
-    [
-
         Button.text(bot_text["test_account"]),
 
     ],
 
     [
 
-        Button.text(bot_text["wallet"]),
+        Button.text(bot_text["new_service"]),
+        Button.text(bot_text["service_extension"]),
+    ],
 
-        Button.text(bot_text["get_buy"]),
+
+    [
+
+        Button.text(bot_text["wallet"]),
+        Button.text(bot_text["my_services"]),
 
     ],
 
     [
 
-        Button.text(bot_text["my_services"]),
 
         Button.text(bot_text["account"]),
+        Button.text(bot_text["get_buy"]),
 
     ],
 
     [
         Button.text(bot_text["download_app"]),
 
-    ]
+    ],
+    [
+
+        Button.text(bot_text["panel"]),
+
+    ],
 
 ]
 
@@ -807,9 +805,6 @@ async def message(event):
             [
                 Button.inline(bot_text["new_service"], b"serv_new")
             ],
-            [
-                Button.inline(bot_text["service_extension"], b'service_extension')
-            ]
         ]
         await event.reply(bot_text["select"], buttons=select_keys)
 
@@ -3416,7 +3411,7 @@ async def ssn(event):
     ]
 
     await bot.send_message(user_id, bot_text["select"], buttons=members_key)
-@bot.on(events.CallbackQuery(data=b'service_extension'))
+@bot.on(events.NewMessage(pattern=f"(?i){bot_text['service_extension']}"))
 async def sr_extension(event):
     user_id = event.sender_id
     history = cur.execute(f"SELECT * FROM services WHERE user_id = {user_id}").fetchall()
@@ -3428,26 +3423,52 @@ async def sr_extension(event):
         await event.reply(bot_text["not_service"], buttons=key)
 
         return
+    async with bot.conversation(user_id, timeout=1000) as conv:
+        await conv.send_message(user_id, bot_text["enter_service_username"])
+        username = await conv.get_response()
+        if username.raw_text is None or username.raw_text == bot_text["back"]:
+            return
+        else:
+            username = username.raw_text
+            url = f"{config.API_ADDRESS}client-info?username={username}"
+            response = requests.post(url)
+            if response.status_code != 200:
+                await conv.send_message(bot_text["service_not_found"])
+                return
+            else:
+                response = response.json()
+                service_username = response["info"]["username"]
+                if service_username != username:
+                    await conv.send_message(bot_text["service_not_found"])
+                    return
+                else:
+                    service_password = response["info"]["password"]
+                    await conv.send_message(bot_text["enter_service_password"])
+                    password = await conv.get_response()
+                    if service_password != password.raw_text:
+                        await conv.send_message(bot_text["password_invalid"])
+                        return
+                    else:
+                        find_service = cur.execute(f"SELECT * FROM services WHERE username={service_username}").fetchone()
+                        if find_service is None:
+                            await conv.send_message(bot_text["service_not_found"])
+                            return
+                        else:
+                            serv_code = find_service[3]
 
-    keys = []
+                            random_num = find_service[4]
 
-    for service in history:
+                            service_name = find_service[1]
 
-        serv_code = service[3]
+                            key = [
 
-        random_num = service[4]
+                                Button.inline(str(service_name), str.encode("ex_service:" + str(serv_code) + ":" + str(random_num)))
 
-        service_name = service[1]        
+                            ]
 
-        key = [
+                            keys.append(key)
 
-            Button.inline(str(service_name), str.encode("ex_service:" + str(serv_code) + ":" + str(random_num)))
-
-        ]
-
-        keys.append(key)
-
-    await event.reply(bot_text["select"], buttons=keys)
+                        await event.reply(bot_text["select"], buttons=keys)
 @bot.on(events.CallbackQuery(pattern="ex_service:*"))
 async def ex_service(event):
     user_id = event.sender_id
