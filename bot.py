@@ -3042,25 +3042,22 @@ async def yes_wallet(event):
 
             await bot.send_message(admin, bot_text["admin_service_notif"].format(service_name=service_name, user_inventory=user_inventory, user_phone=to, service_password=password, username=username_, user_name=user_full_name, user_id=user_id))
 
-        full_text = f"""✅ پرداخت شما تایید و حساب کاربری شما ساخته شد.
+        full_text = f"""🔑 اشتراک شما با موفقیت ساخته شد.
+          
+⚡️ اطلاعات حساب کاربری شما عبارت است از :
+    
+نام کاربری : {username} 
 
+رمز عبور : {password} 
 
-
-⚡️ اطلاعات حساب کاربری شما عبارت است از:
-
-username: {username}
-
-password: {password}
-
-
-
-📌 مشخصات حساب کاربری شما نیز به قرار زیر است:
-
-
-
-نوع سرویس: {service_name}"""
-
-        await event.reply(full_text)
+📌 مشخصات حساب کاربری شما نیز به قرار زیر است:"""
+        service_time = service_name.split("-")[1]
+        service_value = service_name.split("-")[2]
+        key = [
+            [Button.inline(service_time), Button.inline("زمان سرویس")],
+            [Button.inline(service_value), Button.inline("حجم سرویس")]
+        ]
+        await event.reply(full_text, key)
 
         username_sms = config.sms_username
 
