@@ -3765,7 +3765,7 @@ async def sr_ot(event):
 {sub_link}
 """
     await event.reply(text)
-@bot.on(events.CallbackQuery(pattern="sr_inf:")))
+@bot.on(events.CallbackQuery(pattern="sr_inf:"))
 async def sr_inf(event):
     username = event.data.decode().split(":")[1]
     url = f"{config.API_ADDRESS}client-info?username={username}"
