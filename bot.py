@@ -3438,7 +3438,7 @@ async def sr_extension(event):
 
         return
     async with bot.conversation(user_id, timeout=1000) as conv:
-        await conv.send_message(bot_text["enter_service_username"])
+        await conv.send_message(bot_text["enter_service_username"], buttons=back)
         username = await conv.get_response()
         if username.raw_text is None or username.raw_text == bot_text["back"]:
             return
@@ -3458,7 +3458,7 @@ async def sr_extension(event):
                     return
                 else:
                     service_password = response["info"]["password"]
-                    await conv.send_message(bot_text["enter_service_password"])
+                    await conv.send_message(bot_text["enter_service_password"], buttons=back)
                     password = await conv.get_response()
                     if service_password != password.raw_text:
                         await conv.send_message(bot_text["password_invalid"])
