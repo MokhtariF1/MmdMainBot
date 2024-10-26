@@ -3467,9 +3467,7 @@ async def sr_extension(event):
 
                             ]
 
-                            keys.append(key)
-
-                        await event.reply(bot_text["select"], buttons=keys)
+                            await event.reply(bot_text["select"], buttons=key)
 @bot.on(events.CallbackQuery(pattern="ex_service:*"))
 async def ex_service(event):
     user_id = event.sender_id
