@@ -3171,10 +3171,10 @@ async def serv_info_get(event):
             Button.inline("افراد متصل", str.encode("sr_pep:" + str(random_num)))
         ],
         [
-            Button.inline("دریافت لینک ساب v2ray", str.encode("sr_vl:" + str(random_num)))
+            Button.inline("دریافت لینک ساب v2ray", str.encode("sr_vl:" + str(response["info"]["subscription_link"])))
         ],
         [
-            Button.inline("دریافت خروجی اوتلاین", str.encode("sr_ot:" + str(random_num)))
+            Button.inline("دریافت خروجی اوتلاین", str.encode("sr_ot:" + str(response["info"]["outline_link"])))
         ],
     ]
     await event.reply(full_text, buttons=keys)
@@ -3726,5 +3726,36 @@ async def wallet_ex_yes(event):
         db.commit()
 
         await event.reply(bot_text["cant_make_service"])
+@bot.on(events.CallbackQuery(pattern="sr_vl:"))
+async def sr_vl(event):
+    sub_link = event.data.decode().split(":")[1]
+    text = f"""
+❕لینک v2ray جهت استفاده برای آیفون، اندروید در صورت اضطراری بودن
+
+❗️توجه کنید استفاده از این اپشن فقط در صورت اضطراری بودن میباشد.
+
+⚜️ اپلیکیشن اختصاصی همیشه بهترین سرورها رو دارد .
+
+لینک سابسکرایب:
+
+{sub_link}
+
+"""
+    await event.reply(text)
+@bot.on(events.CallbackQuery(pattern="sr_ot:"))
+async def sr_ot(event):
+    sub_link = event.data.decode().split(":")[1]
+    text = f"""
+❕لینک اوتلاین جهت استفاده برای آیفون، اندروید در صورت اضطراری بودن
+
+❗️توجه کنید استفاده از این آپشن فقط در صورت اضطراری بودن میباشد.
+
+⚜️ اپلیکیشن اختصاصی همیشه بهترین سرورها رو دارد .
+
+لینک اوتلاین :
+
+{sub_link}
+"""
+    await event.reply(text)
 bot.run_until_disconnected()
 
