@@ -3052,7 +3052,7 @@ async def yes_wallet(event):
 
 📌 مشخصات حساب کاربری شما نیز به قرار زیر است:"""
         service_time = service_name.split("-")[1]
-        service_value = service_name.split("-")[2]
+        service_value = service_name.split("-")[0]
         key = [
             [Button.inline(service_time), Button.inline("زمان سرویس")],
             [Button.inline(service_value), Button.inline("حجم سرویس")]
