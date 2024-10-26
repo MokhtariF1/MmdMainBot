@@ -3776,5 +3776,22 @@ async def sr_inf(event):
         ],
     ]
     await event.reply("مشخصات سرویس", buttons=keys)
+@bot.on(events.CallbackQuery(pattern="sr_pep:"))
+async def sr_pep(event):
+    username = event.data.decode().split(":")[1]
+    url = f"{config.API_ADDRESS}client-info?username={username}"
+    response = requests.get(url=url)
+    response = response.json()
+    dv = response["info"]["used_devices"]
+    text = f"""
+⚠️ نوع دستگاه ها :
+"""
+    keys = []
+    for i in dv:
+        key = [
+            Button.inline(i["os"]), Button.inline(i["model"])
+        ]
+        keys.append(key)
+    await event.reply(text, buttons=keys)
 bot.run_until_disconnected()
 
