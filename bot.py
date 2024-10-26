@@ -3149,7 +3149,8 @@ async def serv_info_get(event):
     await bot.delete_messages(user_id, r.id)
     response = response.json()
     is_active = None
-    if response["info"]['is_active'] is False:
+    print(["info"]['is_active'])
+    if response["info"]['is_active'] == 0:
         is_active = "غیر فعال"
     else:
         is_active = "فعال"
