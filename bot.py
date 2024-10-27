@@ -3783,7 +3783,6 @@ async def sr_inf(event):
     response = requests.get(url=url)
     response = response.json()
     keys = [
-        [Button.inline("نام"), Button.inline(username)],
         [Button.inline("انقضا"), Button.inline(response["info"]["expire_date"])],
         [
             Button.inline("مصرف کلی"), Button.inline(response["info"]["used_traffic"])
@@ -3791,7 +3790,10 @@ async def sr_inf(event):
     ]
     text = f"""
     مشخصات سرویس
-    `پسورد: {response["info"]["password"]}`
+    `نام کاربری:{username}`
+    
+    
+    `پسورد:{response["info"]["password"]}`
     """
     await event.reply(text, buttons=keys)
 @bot.on(events.CallbackQuery(pattern="sr_pep:"))
