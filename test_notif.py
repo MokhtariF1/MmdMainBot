@@ -3,6 +3,7 @@ import time
 import requests
 import threading
 import config
+from bot import bot_text
 from melipayamak import Api
 from telethon.sync import TelegramClient, Button
 import asyncio
@@ -27,6 +28,7 @@ def send_telegram_message(chat_id, text, ex, username):
             Button.inline("🔋تمدید اشتراک", data=str.encode("sr_inf:" + str(username)))
         ]
     with TelegramClient("cli", config.API_ID, config.API_HASH) as cli:
+        cli.connect()
         cli.send_message(chat_id, text, buttons=keys)
 def check_services():
     conn = sqlite3.connect('bot.db')  # نام دیتابیس خود را اینجا قرار دهید
