@@ -13,7 +13,7 @@ TELEGRAM_API_URL = f"https://api.telegram.org/bot{config.BOT_TOKEN}/sendMessage"
 
 # لیست ادمین‌ها
 ADMINS_LIST = config.ADMINS_LIST
-cli = TelegramClient("cli", config.API_ID, config.API_HASH)
+cli = TelegramClient("cli-not", config.API_ID, config.API_HASH)
 cli.start(bot_token=config.BOT_TOKEN)
 async def send_telegram_message(chat_id, text, username):
     # payload = {
