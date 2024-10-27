@@ -3180,15 +3180,11 @@ async def serv_info_get(event):
 🆔 @SpeedConnectbot"""
     keys = [
         [
-            Button.inline(bot_text["service_info"], str.encode("sr_inf:" + str(username)))
-        ],
-        [
+            Button.inline(bot_text["service_info"], str.encode("sr_inf:" + str(username))),
             Button.inline(bot_text["connected_pep"], str.encode("sr_pep:" + str(username)))
         ],
         [
-            Button.inline(bot_text["sub_link"], str.encode("sr_vl:" + str(username)))
-        ],
-        [
+            Button.inline(bot_text["sub_link"], str.encode("sr_vl:" + str(username))),
             Button.inline(bot_text["outline"], str.encode("sr_ot:" + str(username)))
         ],
     ]
