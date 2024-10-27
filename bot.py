@@ -3790,10 +3790,10 @@ async def sr_inf(event):
     ]
     text = f"""
     مشخصات سرویس
-    `نام کاربری:{username}`
+    نام کاربری:{username}
     
     
-    `پسورد:{response["info"]["password"]}`
+    پسورد:{response["info"]["password"]}
     """
     await event.reply(text, buttons=keys)
 @bot.on(events.CallbackQuery(pattern="sr_pep:"))
