@@ -16,18 +16,26 @@ ADMINS_LIST = config.ADMINS_LIST
 cli = TelegramClient("bot", config.API_ID, config.API_HASH)
 cli.start(bot_token=config.BOT_TOKEN)
 # print(cli.get_me())
-async def send_telegram_message(chat_id, text, ex, username):
+async def send_telegram_message(chat_id, text, username):
     # payload = {
     #     'chat_id': chat_id,
     #     'text': text,
     #     'parse_mode': 'HTML'
     # }
     # requests.post(TELEGRAM_API_URL, data=payload)
-    keys = None
-    if ex:
-        keys = [
-            Button.inline("🔋تمدید اشتراک", data=str.encode("sr_inf:" + str(username)))
+    url = f"{config.API_ADDRESS}client-info?username={username}"
+    response = requests.get(url=url)
+    response = response.json()
+    keys = [
+        [Button.inline("نام"), Button.inline(username)],
+        [Button.inline("انقضا"), Button.inline(response["info"]["expire_date"])],
+        [
+            Button.inline("مصرف کلی"), Button.inline(response["info"]["used_traffic"])
+        ],
+        [
+            Button.inline("پسورد"), Button.inline(response["info"]["password"])
         ]
+    ]
     await cli.send_message(chat_id, text, buttons=keys)
 def check_services():
     loop = asyncio.get_event_loop()
@@ -52,18 +60,15 @@ def check_services():
                 # ارسال پیام به کاربر
                 user_message = f"""❗️ پایان اشتراک تست{username}
 📍 حجم یا تاریخ اعتبار این اشتراک به پایان رسیده است و این اشتراک به صورت خودکار غیرفعال گردیده است!
-
-♻️ جهت فعالسازی مجدد اشتراک خود از دکمه زیر  اقدام به مشاهده اشتراک خود کنید.
-
-❌ در صورت عدم تمدید اشتراک 3 روز پس از پایان مدت اعتبار اشتراک به صورت خودکار توسط ربات حذف خواهد شد
+اطلاعات سرویس شما به شرح زیر است:👇 
 """
-                loop.run_until_complete(send_telegram_message(user_id, user_message, True, username=username))
+                loop.run_until_complete(send_telegram_message(user_id, user_message,username=username))
                 cursor.execute(f"UPDATE test_account SET send_notification = {True} WHERE username = '{username}'")
                 conn.commit()
                 # ارسال پیام به ادمین‌ها
                 admin_message = f"ادمین گرامی، بیش از 90 درصد از اعتبار سرویس با نام کاربری {username} مصرف شده است\nآیدی عددی کاربر: {user_id}"
                 for admin_id in ADMINS_LIST:
-                    loop.run_until_complete(send_telegram_message(admin_id, admin_message, ex=False, username=username))
+                    loop.run_until_complete(send_telegram_message(admin_id, admin_message, username=username))
 
         time.sleep(60)  # هر 1 دقیقه چک کند
 
