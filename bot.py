@@ -751,7 +751,7 @@ async def message(event):
             return
         services = len(cur.execute(f"SELECT * FROM services WHERE user_id = {user_id}").fetchall())
         suc_pay = len(cur.execute(f"SELECT * FROM pay WHERE user_id = {user_id} AND confirmation = {True}").fetchall())
-        no_pay suc_pay = len(cur.execute(f"SELECT * FROM pay WHERE user_id = {user_id} AND confirmation = {False}").fetchall())
+        no_pay = len(cur.execute(f"SELECT * FROM pay WHERE user_id = {user_id} AND confirmation = {False}").fetchall())
         full_text = bot_text["user_info_text"].format(user_id=user_id, phone=user_phone, inventory=user_inventory, sr=services, ok_pay=suc_pay, no_pay=no_pay)
 
         await event.reply(full_text, buttons=back)
