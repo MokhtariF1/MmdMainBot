@@ -3,7 +3,7 @@ import time
 import requests
 import threading
 import config
-from bot import bot_text
+# from bot import bot_text
 from melipayamak import Api
 from telethon.sync import TelegramClient, Button
 import asyncio
