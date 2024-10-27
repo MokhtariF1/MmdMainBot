@@ -5,6 +5,7 @@ import threading
 import config
 from melipayamak import Api
 from telethon import TelegramClient, Button
+import asyncio
 
 # تنظیمات تلگرام
 TELEGRAM_API_URL = f"https://api.telegram.org/bot{config.BOT_TOKEN}/sendMessage"
@@ -64,6 +65,4 @@ async def check_services():
 
         time.sleep(60)  # هر 1 دقیقه چک کند
 
-if __name__ == "__main__":
-    service_checker_thread = threading.Thread(target=check_services)
-    service_checker_thread.start()
+asyncio.run(check_services())
