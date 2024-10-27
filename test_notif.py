@@ -27,7 +27,7 @@ async def send_telegram_message(chat_id, text, ex, username):
     cli.start(bot_token=config.BOT_TOKEN)
     await cli.send_message(chat_id, text, buttons=keys)
     await cli.disconnect()
-def check_services():
+async def check_services():
     conn = sqlite3.connect('bot.db')  # نام دیتابیس خود را اینجا قرار دهید
     cursor = conn.cursor()
 
@@ -54,13 +54,13 @@ def check_services():
 
 ❌ در صورت عدم تمدید اشتراک 3 روز پس از پایان مدت اعتبار اشتراک به صورت خودکار توسط ربات حذف خواهد شد
 """
-                send_telegram_message(user_id, user_message, True, username=username)
+                await send_telegram_message(user_id, user_message, True, username=username)
                 cursor.execute(f"UPDATE test_account SET send_notification = {True} WHERE username = '{username}'")
                 conn.commit()
                 # ارسال پیام به ادمین‌ها
                 admin_message = f"ادمین گرامی، بیش از 90 درصد از اعتبار سرویس با نام کاربری {username} مصرف شده است\nآیدی عددی کاربر: {user_id}"
                 for admin_id in ADMINS_LIST:
-                    send_telegram_message(admin_id, admin_message, ex=False, username=username)
+                    await send_telegram_message(admin_id, admin_message, ex=False, username=username)
 
         time.sleep(60)  # هر 1 دقیقه چک کند
 
