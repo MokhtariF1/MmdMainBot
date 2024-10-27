@@ -12,6 +12,8 @@ TELEGRAM_API_URL = f"https://api.telegram.org/bot{config.BOT_TOKEN}/sendMessage"
 
 # لیست ادمین‌ها
 ADMINS_LIST = config.ADMINS_LIST
+cli = TelegramClient("cli", config.API_ID, config.API_HASH)
+cli.start(bot_token=config.BOT_TOKEN)
 async def send_telegram_message(chat_id, text, ex, username):
     # payload = {
     #     'chat_id': chat_id,
@@ -24,10 +26,7 @@ async def send_telegram_message(chat_id, text, ex, username):
         keys = [
             Button.inline("🔋تمدید اشتراک", data=str.encode("sr_inf:" + str(username)))
         ]
-    cli = TelegramClient("cli", config.API_ID, config.API_HASH)
-    cli.start(bot_token=config.BOT_TOKEN)
     await cli.send_message(chat_id, text, buttons=keys)
-    await cli.disconnect()
 async def check_services():
     conn = sqlite3.connect('bot.db')  # نام دیتابیس خود را اینجا قرار دهید
     cursor = conn.cursor()
