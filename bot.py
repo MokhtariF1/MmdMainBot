@@ -3795,7 +3795,7 @@ async def sr_inf(event):
     مشخصات سرویس
     `پسورد: {response["info"]["password"]}`
     """
-    await event.reply(, buttons=keys)
+    await event.reply(text, buttons=keys)
 @bot.on(events.CallbackQuery(pattern="sr_pep:"))
 async def sr_pep(event):
     username = event.data.decode().split(":")[1]
