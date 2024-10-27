@@ -1291,16 +1291,32 @@ async def message(event):
             await conv.send_message(bot_text["cart_send_admin"])
 
     elif text == bot_text["wallet"]:
-        key = [
+        # key = [
+        #
+        #     [
+        #         Button.inline(bot_text["charge_wallet"], data=b'charge_wallet')
+        #     ],
+        #
+        # ]
+        #
+        # await event.reply(bot_text["select"], buttons=key)
+        keys = [
 
             [
-                Button.inline(bot_text["charge_wallet"], data=b'charge_wallet')
+
+                Button.inline(bot_text["pay_link_cart"], b'cart_pay')
+
+            ],
+
+            [
+
+                Button.inline(bot_text["pay_link_zibal"], b'pay_zibal')
+
             ],
 
         ]
 
-        await event.reply(bot_text["select"], buttons=key)
-
+        await event.reply(bot_text["pay_war"].format(inventory=), buttons=keys)
     elif text == bot_text["pay_history"]:
 
         history = cur.execute(f"SELECT * FROM pay WHERE user_id = {user_id} AND confirmation = {True}").fetchall()
@@ -2069,86 +2085,86 @@ async def wallet_with_draw(event):
 
         await event.reply(bot_text["wallet_with_draw"].format(amount=amount, amount_two=amount, pay_type="مستقیم", name="خالی", phone="خالی", date=time_s, time=now_hms, code=code))
 
-@bot.on(events.CallbackQuery(data=b'charge_wallet'))
-
-async def charge_wallet(event):
-
-    user_id = event.sender_id
-
-    is_ban = config.is_ban(user_id)
-
-    if is_ban:
-
-        await event.reply(bot_text["you_banned"])
-
-        return
-
-    # async with bot.conversation(user_id, timeout=1000) as conv:
-
-    #     await conv.send_message(bot_text["enter_amount"])
-
-    #     while True:
-
-    #         try:
-
-    #             amount = await conv.get_response()
-
-    #             amount = amount.raw_text
-
-    #             if amount == bot_text["back"]:
-
-    #                 await conv.cancel_all()
-
-    #             if int(amount) < 10000:
-
-    #                 await conv.send_message(bot_text["small_amount"])
-
-    #             elif int(amount) > 5000000:
-
-    #                 await conv.send_message(bot_text["big_amount"])
-
-    #             else:
-
-    #                 break
-
-    #         except ValueError:
-
-    #             await conv.send_message(bot_text["just_num"])
-
-    # who = "new" if config.lock_bot != 1 else "hamkaran"
-
-    # # keys = [
-
-    # #     [
-
-    # #         Button.url(bot_text["pay_link_cart"], f"https://t.me/{config.pay_bot_username}?start=pay=cart={amount}={who}")
-
-    # #     ],
-
-    # #     [
-
-    # #         Button.url(bot_text["pay_link_zibal"], f"https://t.me/{config.pay_bot_username}?start=pay=zibal={amount}={who}")
-
-    # #     ],
-
-    # # ]
-    keys = [
-
-        [
-
-            Button.inline(bot_text["pay_link_cart"], b'cart_pay')
-
-        ],
-
-        [
-
-            Button.inline(bot_text["pay_link_zibal"], b'pay_zibal')
-
-        ],
-
-    ]
-
-    await event.reply(bot_text["select"], buttons=keys)
+# @bot.on(events.CallbackQuery(data=b'charge_wallet'))
+#
+# async def charge_wallet(event):
+#
+#     user_id = event.sender_id
+#
+#     is_ban = config.is_ban(user_id)
+#
+#     if is_ban:
+#
+#         await event.reply(bot_text["you_banned"])
+#
+#         return
+#
+#     # async with bot.conversation(user_id, timeout=1000) as conv:
+#
+#     #     await conv.send_message(bot_text["enter_amount"])
+#
+#     #     while True:
+#
+#     #         try:
+#
+#     #             amount = await conv.get_response()
+#
+#     #             amount = amount.raw_text
+#
+#     #             if amount == bot_text["back"]:
+#
+#     #                 await conv.cancel_all()
+#
+#     #             if int(amount) < 10000:
+#
+#     #                 await conv.send_message(bot_text["small_amount"])
+#
+#     #             elif int(amount) > 5000000:
+#
+#     #                 await conv.send_message(bot_text["big_amount"])
+#
+#     #             else:
+#
+#     #                 break
+#
+#     #         except ValueError:
+#
+#     #             await conv.send_message(bot_text["just_num"])
+#
+#     # who = "new" if config.lock_bot != 1 else "hamkaran"
+#
+#     # # keys = [
+#
+#     # #     [
+#
+#     # #         Button.url(bot_text["pay_link_cart"], f"https://t.me/{config.pay_bot_username}?start=pay=cart={amount}={who}")
+#
+#     # #     ],
+#
+#     # #     [
+#
+#     # #         Button.url(bot_text["pay_link_zibal"], f"https://t.me/{config.pay_bot_username}?start=pay=zibal={amount}={who}")
+#
+#     # #     ],
+#
+#     # # ]
+#     keys = [
+#
+#         [
+#
+#             Button.inline(bot_text["pay_link_cart"], b'cart_pay')
+#
+#         ],
+#
+#         [
+#
+#             Button.inline(bot_text["pay_link_zibal"], b'pay_zibal')
+#
+#         ],
+#
+#     ]
+#
+#     await event.reply(bot_text["pay_war"].format(inventory=), buttons=keys)
 
 
 
@@ -3162,16 +3178,16 @@ async def serv_info_get(event):
 🆔 @SpeedConnectbot"""
     keys = [
         [
-            Button.inline("مشخصات سرویس", str.encode("sr_inf:" + str(username)))
+            Button.inline(bot_text["service_info"], str.encode("sr_inf:" + str(username)))
         ],
         [
-            Button.inline("افراد متصل", str.encode("sr_pep:" + str(username)))
+            Button.inline(bot_text["connected_pep"], str.encode("sr_pep:" + str(username)))
         ],
         [
-            Button.inline("دریافت لینک ساب v2ray", str.encode("sr_vl:" + str(username)))
+            Button.inline(bot_text["sub_link"], str.encode("sr_vl:" + str(username)))
         ],
         [
-            Button.inline("دریافت خروجی اوتلاین", str.encode("sr_ot:" + str(username)))
+            Button.inline(bot_text["outline"], str.encode("sr_ot:" + str(username)))
         ],
     ]
     await event.reply(full_text, buttons=keys)
@@ -3759,7 +3775,7 @@ async def sr_ot(event):
 
 لینک اوتلاین :
 
-{sub_link}
+`{sub_link}`
 """
     await event.reply(text)
 @bot.on(events.CallbackQuery(pattern="sr_inf:"))
@@ -3775,7 +3791,11 @@ async def sr_inf(event):
             Button.inline("مصرف کلی"), Button.inline(response["info"]["used_traffic"])
         ],
     ]
-    await event.reply("مشخصات سرویس", buttons=keys)
+    text = f"""
+    مشخصات سرویس
+    `پسورد: {response["info"]["password"]}`
+    """
+    await event.reply(, buttons=keys)
 @bot.on(events.CallbackQuery(pattern="sr_pep:"))
 async def sr_pep(event):
     username = event.data.decode().split(":")[1]
