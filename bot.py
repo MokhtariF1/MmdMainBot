@@ -1315,7 +1315,7 @@ async def message(event):
             ],
 
         ]
-        user_inventory = cur.execute("SELECT inventory FROM users WHERE user_id = {user_id}").fetchone()[1]
+        user_inventory = cur.execute(f"SELECT inventory FROM users WHERE user_id = {user_id}").fetchone()[1]
         await event.reply(bot_text["pay_war"].format(inventory=user_inventory), buttons=keys)
     elif text == bot_text["pay_history"]:
 
