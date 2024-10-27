@@ -67,6 +67,7 @@ def check_services():
 
         time.sleep(60)  # هر 1 دقیقه چک کند
 
-if __name__ == "__main__":
-    service_checker_thread = threading.Thread(target=check_services)
-    service_checker_thread.start()
+# if __name__ == "__main__":
+#     service_checker_thread = threading.Thread(target=check_services)
+#     service_checker_thread.start()
+check_services()
