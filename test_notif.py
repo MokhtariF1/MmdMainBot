@@ -13,9 +13,10 @@ TELEGRAM_API_URL = f"https://api.telegram.org/bot{config.BOT_TOKEN}/sendMessage"
 
 # لیست ادمین‌ها
 ADMINS_LIST = config.ADMINS_LIST
-# cli.start(bot_token=config.BOT_TOKEN)
+cli = TelegramClient("cli", config.API_ID, config.API_HASH)
+cli.start(bot_token=config.BOT_TOKEN)
 # print(cli.get_me())
-def send_telegram_message(chat_id, text, ex, username):
+async def send_telegram_message(chat_id, text, ex, username):
     # payload = {
     #     'chat_id': chat_id,
     #     'text': text,
@@ -27,10 +28,9 @@ def send_telegram_message(chat_id, text, ex, username):
         keys = [
             Button.inline("🔋تمدید اشتراک", data=str.encode("sr_inf:" + str(username)))
         ]
-    with TelegramClient("cli", config.API_ID, config.API_HASH) as cli:
-        cli.connect()
-        cli.send_message(chat_id, text, buttons=keys)
+    await cli.send_message(chat_id, text, buttons=keys)
 def check_services():
+    loop = asyncio.get_event_loop()
     conn = sqlite3.connect('bot.db')  # نام دیتابیس خود را اینجا قرار دهید
     cursor = conn.cursor()
 
@@ -57,13 +57,13 @@ def check_services():
 
 ❌ در صورت عدم تمدید اشتراک 3 روز پس از پایان مدت اعتبار اشتراک به صورت خودکار توسط ربات حذف خواهد شد
 """
-                send_telegram_message(user_id, user_message, True, username=username)
+                loop.run_until_complete(send_telegram_message(user_id, user_message, True, username=username))
                 cursor.execute(f"UPDATE test_account SET send_notification = {True} WHERE username = '{username}'")
                 conn.commit()
                 # ارسال پیام به ادمین‌ها
                 admin_message = f"ادمین گرامی، بیش از 90 درصد از اعتبار سرویس با نام کاربری {username} مصرف شده است\nآیدی عددی کاربر: {user_id}"
                 for admin_id in ADMINS_LIST:
-                    send_telegram_message(admin_id, admin_message, ex=False, username=username)
+                    loop.run_until_complete(send_telegram_message(admin_id, admin_message, ex=False, username=username))
 
         time.sleep(60)  # هر 1 دقیقه چک کند
 
