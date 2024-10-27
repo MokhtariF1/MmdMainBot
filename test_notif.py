@@ -64,4 +64,4 @@ async def check_services():
 
         time.sleep(60)  # هر 1 دقیقه چک کند
 
-asyncio.run(check_services())
+asyncio.run(check_services)
