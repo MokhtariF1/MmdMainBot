@@ -3788,8 +3788,7 @@ async def sr_inf(event):
             Button.inline("مصرف کلی"), Button.inline(response["info"]["used_traffic"])
         ],
     ]
-    text = f"""
-    مشخصات سرویس
+    text = f"""مشخصات سرویس
     نام کاربری:{username}
     
     
