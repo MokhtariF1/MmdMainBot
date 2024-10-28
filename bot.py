@@ -1629,8 +1629,8 @@ async def message(event):
 
                     try:
 
-                        await bot.send_message(user_id_, q_text, file=image_path)
-
+                        r = await bot.send_message(user_id_, q_text, file=image_path)
+                        await bot.pin_message(user_id_, r.id)
                     except:
 
                         continue
