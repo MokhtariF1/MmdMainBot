@@ -17,7 +17,7 @@ if ENV == 1:
     pay_bot_username = "pardahkt_bot"
     lock_bot = 0 # 0
     BOT_ID = "https://t.me/SpeedConnectbot"
-    CHANNEL_ID = "https://t.me/SpeedConnect_Nim"
+    CHANNEL_ID = "https://t.me/SpeedConnect"
     API_ADDRESS = f"http://127.0.0.1:8000/"
 else:
     BOT_TOKEN = "6383493043:AAG3I_ZMgdNQw97BR78r_EtBH55xtI5frLY"
@@ -442,3 +442,4 @@ plans_json = {
     22: "1502637f-5ae7-485b-b70f-59dbf1f06c44",
     23: "7b5f87eb-f2bd-4d8b-a32b-19a2bb51035b"
 }
+
