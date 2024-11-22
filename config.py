@@ -17,7 +17,7 @@ if ENV == 1:
     pay_bot_username = "pardahkt_bot"
     lock_bot = 0 # 0
     BOT_ID = "https://t.me/SpeedConnectbot"
-    CHANNEL_ID = "https://t.me/SpeedConnect"
+    CHANNEL_ID = 1947782337
     API_ADDRESS = f"http://127.0.0.1:8000/"
     panel_api_address = "https://app-panelmyqp.ir/get.php"
     MARZBAN_API_URL = f"https://panel.panelmarzban.com/api/"
@@ -364,7 +364,7 @@ https://testflight.apple.com/join/FQkEGDfX
 
 async def join_check(user_id, cli):
     get_info = await cli.get_entity(CHANNEL_ID)
-    TELEGRAM_API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}/getChatMember?chat_id=@hoooosseinbot&user_id={user_id}"
+    TELEGRAM_API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}/getChatMember?chat_id=-1001947782337&user_id={user_id}"
     response = requests.post(TELEGRAM_API_URL)
     response = response.json()
     print(response)
