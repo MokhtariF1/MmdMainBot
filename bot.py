@@ -676,7 +676,7 @@ async def message(event):
 
                 new_timestamp = new_datetime.timestamp()
                 cur.execute(
-                    f"INSERT INTO iphone_services VALUES ({user_id}, '{username}', '{sub}', '{service_num}', {random_num}, {start_time}, {new_timestamp})")
+                    f"INSERT INTO iphone_services VALUES ({user_id}, '{username}', '{sub}', '{int(find_service[3])}', {random_num}, {start_time}, {new_timestamp})")
                 db.commit()
                 print(username, sub)
                 delete_user = f"{config.panel_api_address}?method=delete_user&name={username_panel}&ADMIN=SpeedConnect"
