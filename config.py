@@ -357,6 +357,9 @@ https://testflight.apple.com/join/FQkEGDfX
     "vip_info": "اکانت های اختصاصی",
     "iphone_info": "اکانت های آیفون",
     "change_service_to_iphone": "تعویض اکانت به آیفون",
+    "change_iphone": "تغییر اکانت به آیفون (کصکش)",
+    "enter_serv_username": "نام کاربری سرور اختصاصی رو وارد کن کصکش:",
+
 }
 
 async def join_check(user_id, cli):
