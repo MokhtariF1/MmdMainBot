@@ -631,7 +631,7 @@ async def message(event):
                 username, sub = await functions.get_iphone_service(expire, functions.mega_to_bytes(update_value_size))
                 random_num = randint(1000000, 9999999)
                 # متغیر شروع با زمان فعلی
-                service_name = config.iphone_plan_names[int(service_num)]
+                service_name = config.iphone_plan_names[int(find_service[3])]
                 start_time = time.time()
 
                 # تبدیل زمان به فرمت datetime
