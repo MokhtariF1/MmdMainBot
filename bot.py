@@ -4313,13 +4313,13 @@ async def sr_inf(event):
     keys = [
         [Button.inline("انقضا"), Button.inline(shamsi_date)],
         [
-            Button.inline("حجم کل"), Button.inline(f"{response["info"]["total"]}G")
+            Button.inline("حجم کل"), Button.inline(f'{response["info"]["total"]}G')
         ],
         [
-            Button.inline("حجم مصرفی"), Button.inline(f"{response["info"]["size"]}M")
+            Button.inline("حجم مصرفی"), Button.inline(f'{response["info"]["size"]}M')
         ],
         [
-            Button.inline("حجم باقیمانده"), Button.inline(f"{response["info"]["full"]}G")
+            Button.inline("حجم باقیمانده"), Button.inline(f'{response["info"]["full"]}G')
         ]
     ]
     text = f"""مشخصات سرویس
