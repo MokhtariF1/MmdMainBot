@@ -617,13 +617,13 @@ async def message(event):
             await conv.send_message(bot_text["enter_serv_username"])
             username_panel = await conv.get_response()
             username_panel = username_panel.raw_text
-            find_service = cur.execute(f"SELECT * FROM services WHERE username = '{username_panel}'").fetchone()
-            if find_service is None:
-                await conv.send_message(bot_text["service_not_found"])
+            url = f"{config.panel_api_address}?method=data_user&name={username_panel}&ADMIN=SpeedConnect"
+            response = requests.get(url)
+            response = response.json()
+            if response["result"] == "false":
+                await event.reply(bot_text["service_not_found"])
+                return
             else:
-                url = f"{config.panel_api_address}?method=data_user&name={username_panel}&ADMIN=SpeedConnect"
-                response = requests.get(url)
-                response = response.json()
                 total = int(response["total"]) * 1000
                 size = response["size"]
                 update_value_size = int(total) - int(size)
@@ -631,7 +631,7 @@ async def message(event):
                 username, sub = await functions.get_iphone_service(expire, functions.mega_to_bytes(update_value_size))
                 random_num = randint(1000000, 9999999)
                 # متغیر شروع با زمان فعلی
-                service_name = config.iphone_plan_names[int(find_service[3])]
+                # service_name = config.iphone_plan_names[int(find_service[3])]
                 start_time = time.time()
 
                 # تبدیل زمان به فرمت datetime
@@ -640,15 +640,15 @@ async def message(event):
 
                 # شرط برای اضافه کردن روز
 
-                if "1 ماهه" in service_name:
+                if int(response["day"]) == 30:
 
                     condition = 'add_32_days'  # می‌توانید این مقدار را به 'add_64_days' یا 'add_99_days' تغییر دهید
 
-                elif "2 ماهه" in service_name:
+                elif int(response["day"]) == 60:
 
                     condition = 'add_64_days'
 
-                elif "3 ماهه" in service_name:
+                elif int(response["day"]) == 90:
 
                     condition = 'add_99_days'
 
