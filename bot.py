@@ -621,11 +621,10 @@ async def message(event):
             url = f"{config.panel_api_address}?method=data_user&name={username_panel}&ADMIN=SpeedConnect"
             response = requests.get(url)
             response = response.json()
-            print(response)
-            if response["result"] == "false":
-                await event.reply(bot_text["service_not_found"])
-                return
-            else:
+            try:
+                response["result"]
+                await event.reply(bot_text["sevice_not_found"])
+            except KeyError:
                 total = int(response["total"]) * 1000
                 size = response["size"]
                 update_value_size = int(total) - int(size)
