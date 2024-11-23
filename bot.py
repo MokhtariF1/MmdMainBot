@@ -569,7 +569,7 @@ async def message(event):
 
         ]
 
-        await event.reply(bot_text["download_help"], buttons=keys)
+        await event.reply(bot_text["download_help"])
 
     elif text == bot_text["panel"]:
 
@@ -2903,6 +2903,72 @@ async def three_mem(event):
 
     await event.reply(bot_text["select"], buttons=buttons)
 
+
+@bot.on(events.CallbackQuery(data=b'iphone_one_member'))
+
+async def iphone_one_mem(event):
+
+    user_id = event.sender_id
+
+    is_ban = config.is_ban(user_id)
+
+    if is_ban:
+
+        await event.reply(bot_text["you_banned"])
+
+        return
+
+    buttons = []
+
+    for key, value in config.one_member_namesـiphone.items():
+
+        buttons.append([Button.inline(value, data=str.encode("iphone_buy_serv:" + str(key)))])
+
+    await event.reply(bot_text["select"], buttons=buttons)
+
+@bot.on(events.CallbackQuery(data=b'iphone_two_member'))
+
+async def iphone_two_mem(event):
+
+    user_id = event.sender_id
+
+    is_ban = config.is_ban(user_id)
+
+    if is_ban:
+
+        await event.reply(bot_text["you_banned"])
+
+        return
+
+    buttons = []
+
+    for key, value in config.two_member_names_iphone.items():
+
+        buttons.append([Button.inline(value, data=str.encode("iphone_buy_serv:" + str(key)))])
+
+    await event.reply(bot_text["select"], buttons=buttons)
+
+@bot.on(events.CallbackQuery(data=b'iphone_three_member'))
+
+async def iphone_three_mem(event):
+
+    user_id = event.sender_id
+
+    is_ban = config.is_ban(user_id)
+
+    if is_ban:
+
+        await event.reply(bot_text["you_banned"])
+
+        return
+
+    buttons = []
+
+    for key, value in config.three_member_names_iphone.items():
+
+        buttons.append([Button.inline(value, data=str.encode("iphone_buy_serv:" + str(key)))])
+
+    await event.reply(bot_text["select"], buttons=buttons)
 @bot.on(events.CallbackQuery(pattern="buy_service:*"))
 
 async def buy_serv(event):
@@ -3957,14 +4023,30 @@ async def bia(event):
         await event.reply(bot_text["you_banned"])
 
         return
+    user_id = event.sender_id
+    members_key = [
 
-    buttons = []
+        [
 
-    for key, value in config.iphone_plan_names.items():
+            Button.inline(bot_text["one_member"], b'iphone_one_member'),
 
-        buttons.append([Button.inline(value, data=str.encode("iphone_buy_serv:" + str(key)))])
+        ],
 
-    await event.reply(bot_text["select"], buttons=buttons)
+        [
+
+            Button.inline(bot_text["two_member"], b'iphone_two_member'),
+
+        ],
+
+        [
+
+            Button.inline(bot_text["three_member"], b'iphone_three_member'),
+
+        ]
+
+    ]
+
+    await bot.send_message(user_id, bot_text["select"], buttons=members_key)
 
 @bot.on(events.NewMessage(pattern=f"(?i){bot_text['service_extension']}"))
 async def sr_extension(event):
