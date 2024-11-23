@@ -630,56 +630,6 @@ async def message(event):
                 update_value_size = int(total) - int(size)
                 expire = functions.calculate_date_difference(response["date_buy"], response["day"]) * 86400
                 username, sub = await functions.get_iphone_service(expire, functions.mega_to_bytes(update_value_size))
-                random_num = randint(1000000, 9999999)
-                # متغیر شروع با زمان فعلی
-                # service_name = config.iphone_plan_names[int(find_service[3])]
-                start_time = time.time()
-
-                # تبدیل زمان به فرمت datetime
-
-                start_datetime = datetime.fromtimestamp(start_time)
-
-                # شرط برای اضافه کردن روز
-
-                if int(response["day"]) == 30:
-
-                    condition = 'add_32_days'  # می‌توانید این مقدار را به 'add_64_days' یا 'add_99_days' تغییر دهید
-
-                elif int(response["day"]) == 60:
-
-                    condition = 'add_64_days'
-
-                elif int(response["day"]) == 90:
-
-                    condition = 'add_99_days'
-
-                else:
-
-                    print("نیست")
-
-                if condition == 'add_32_days':
-
-                    new_datetime = start_datetime + timedelta(days=32)
-
-                elif condition == 'add_64_days':
-
-                    new_datetime = start_datetime + timedelta(days=64)
-
-                elif condition == 'add_99_days':
-
-                    new_datetime = start_datetime + timedelta(days=99)
-
-                else:
-
-                    new_datetime = start_datetime  # در صورت عدم تطابق، زمان اولیه را برمی‌گرداند
-
-                # تبدیل زمان جدید به timestamp
-
-                new_timestamp = new_datetime.timestamp()
-                cur.execute(
-                    f"INSERT INTO iphone_services VALUES ({user_id}, '{username}', '{sub}', '{int(find_service[3])}', {random_num}, {start_time}, {new_timestamp})")
-                db.commit()
-                print(username, sub)
                 delete_user = f"{config.panel_api_address}?method=delete_user&name={username_panel}&ADMIN=SpeedConnect"
                 response = requests.get(delete_user)
                 print(response.json())
