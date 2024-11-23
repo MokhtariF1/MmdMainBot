@@ -617,9 +617,11 @@ async def message(event):
             await conv.send_message(bot_text["enter_serv_username"])
             username_panel = await conv.get_response()
             username_panel = username_panel.raw_text
+            print(username_panel)
             url = f"{config.panel_api_address}?method=data_user&name={username_panel}&ADMIN=SpeedConnect"
             response = requests.get(url)
             response = response.json()
+            print(response)
             if response["result"] == "false":
                 await event.reply(bot_text["service_not_found"])
                 return
