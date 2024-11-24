@@ -42,7 +42,7 @@ async def get_iphone_service(expire, data_limit):
     }
     login_token = requests.post(f"{config.MARZBAN_API_URL}admin/token", data=login_body).json()["access_token"]
     print(login_token)
-    username = f"user_{random.choice(string.ascii_letters)}_{random.randint(1000, 9999)}"
+    username = f"user{random.choice(string.ascii_letters)}{random.randint(1000, 9999)}"
     headers = {
         "accept": "application/json",
         "Authorization": f"Bearer {login_token}",
