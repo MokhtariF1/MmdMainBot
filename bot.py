@@ -4011,6 +4011,15 @@ async def sr_extension(event):
         await event.reply(bot_text["not_service"], buttons=key)
 
         return
+    keys = [
+        Button.inline(bot_text["vip_extension"], b'vip_extension'),
+        Button.inline(bot_text["iphone_extension"], b'iphone_extension'),
+    ]
+    await event.reply(bot_text["select"], buttons=keys)
+
+@bot.on(events.CallbackQuery(data=b'vip_extension'))
+async def vip_extension(event):
+    user_id = event.sender_id
     async with bot.conversation(user_id, timeout=1000) as conv:
         await conv.send_message(bot_text["enter_service_username"], buttons=back)
         username = await conv.get_response()
@@ -4056,6 +4065,32 @@ async def sr_extension(event):
                             ]
 
                             await event.reply(bot_text["select"], buttons=key)
+@bot.on(events.CallbackQuery(data=b'iphone_extension'))
+async def iphone_extension(event):
+    user_id = event.sender_id
+    async with bot.conversation(user_id, timeout=1000) as conv:
+        await conv.send_message(bot_text["enter_service_username"], buttons=back)
+        username = await conv.get_response()
+        if username.raw_text is None or username.raw_text == bot_text["back"]:
+            return
+        else:
+            username = username.raw_text
+            find_service = cur.execute(
+                f"SELECT * FROM iphone_services WHERE username = '{username}' AND user_id = {user_id}").fetchone()
+            if find_service is None:
+                await conv.send_message(bot_text["service_not_found"])
+                return
+            else:
+                serv_code = find_service[3]
+
+                random_num = find_service[4]
+                service_name = config.iphone_plan_names[int(serv_code)]
+                key = [
+
+                    Button.inline(str(service_name), str.encode("iphone_ex_service:" + str(serv_code) + ":" + str(random_num)))
+
+                ]
+                await event.reply(bot_text["select"], buttons=key)
 @bot.on(events.CallbackQuery(pattern="ex_service:*"))
 async def ex_service(event):
     user_id = event.sender_id
@@ -4095,6 +4130,38 @@ async def ex_service(event):
             await bot.send_message(user_id, bot_text["select_ex_plan"], buttons=members_key)
         else:
             await event.reply(bot_text["cant_request_info"])
+@bot.on(events.CallbackQuery(pattern="iphone_ex_service:*"))
+async def iphone_ex_service(event):
+    user_id = event.sender_id
+    service_num = event.data.decode().split(":")[1]
+    random_num = event.data.decode().split(":")[2]
+    find_service = cur.execute(f"SELECT username FROM iphone_services WHERE random_num = {random_num}").fetchone()
+    if find_service is None:
+        await event.reply(bot_text["service_not_found"])
+    else:
+        members_key = [
+
+            [
+
+                Button.inline(bot_text["one_member"], str.encode("iphone_one_ex_service:" + str(find_service[0]))),
+
+            ],
+
+            [
+
+                Button.inline(bot_text["two_member"], str.encode("iphone_two_ex_service:" + str(find_service[0]))),
+
+            ],
+
+            [
+
+                Button.inline(bot_text["three_member"], str.encode("iphone_three_ex_service:" + str(find_service[0]))),
+
+            ]
+
+        ]
+
+        await bot.send_message(user_id, bot_text["select_ex_plan"], buttons=members_key)
 @bot.on(events.CallbackQuery(pattern="one_ex_service:*"))
 async def one_ex_service(event):
     user_id = event.sender_id
@@ -4112,6 +4179,25 @@ async def one_ex_service(event):
     for key, value in config.one_member_names.items():
 
         buttons.append([Button.inline(value, data=str.encode("plan_ex_service:" + str(key) + ":" + str(username)))])
+
+    await event.reply(bot_text["select"], buttons=buttons)
+@bot.on(events.CallbackQuery(pattern="iphone_one_ex_service:*"))
+async def iphone_one_ex_service(event):
+    user_id = event.sender_id
+
+    is_ban = config.is_ban(user_id)
+
+    if is_ban:
+
+        await event.reply(bot_text["you_banned"])
+
+        return
+    username = event.data.decode().split(":")[1]
+    buttons = []
+
+    for key, value in config.one_member_namesـiphone.items():
+
+        buttons.append([Button.inline(value, data=str.encode("iphone_plan_ex_service:" + str(key) + ":" + str(username)))])
 
     await event.reply(bot_text["select"], buttons=buttons)
 @bot.on(events.CallbackQuery(pattern="two_ex_service:*"))
@@ -4133,6 +4219,25 @@ async def two_ex_service(event):
         buttons.append([Button.inline(value, data=str.encode("plan_ex_service:" + str(key) + ":" + str(username)))])
 
     await event.reply(bot_text["select"], buttons=buttons)
+@bot.on(events.CallbackQuery(pattern="iphone_two_ex_service:*"))
+async def iphone_two_ex_service(event):
+    user_id = event.sender_id
+
+    is_ban = config.is_ban(user_id)
+
+    if is_ban:
+
+        await event.reply(bot_text["you_banned"])
+
+        return
+    username = event.data.decode().split(":")[1]
+    buttons = []
+
+    for key, value in config.two_member_names_iphone.items():
+
+        buttons.append([Button.inline(value, data=str.encode("iphone_plan_ex_service:" + str(key) + ":" + str(username)))])
+
+    await event.reply(bot_text["select"], buttons=buttons)
 @bot.on(events.CallbackQuery(pattern="three_ex_service:*"))
 async def three_ex_service(event):
     user_id = event.sender_id
@@ -4150,6 +4255,25 @@ async def three_ex_service(event):
     for key, value in config.three_member_names.items():
 
         buttons.append([Button.inline(value, data=str.encode("plan_ex_service:" + str(key) + ":" + str(username)))])
+
+    await event.reply(bot_text["select"], buttons=buttons)
+@bot.on(events.CallbackQuery(pattern="iphone_three_ex_service:*"))
+async def iphone_three_ex_service(event):
+    user_id = event.sender_id
+
+    is_ban = config.is_ban(user_id)
+
+    if is_ban:
+
+        await event.reply(bot_text["you_banned"])
+
+        return
+    username = event.data.decode().split(":")[1]
+    buttons = []
+
+    for key, value in config.three_member_names_iphone.items():
+
+        buttons.append([Button.inline(value, data=str.encode("iphone_plan_ex_service:" + str(key) + ":" + str(username)))])
 
     await event.reply(bot_text["select"], buttons=buttons)
 @bot.on(events.CallbackQuery(pattern="plan_ex_service:*"))
@@ -4180,6 +4304,46 @@ async def plan_ex_service(event):
         [
 
             Button.inline(bot_text["pay_and_active_ex"], str.encode("buy_ex_wallet:" + str(service_num) + ":" + str(username)))
+
+        ],
+
+        # [
+
+        #     Button.inline(bot_text["pay"], str.encode("pay_service:" + str(service_num)))
+
+        # ]
+
+    ]
+
+    await event.reply(bot_text["pay_replay_ex"].format(amount=amount, service=service_name), buttons=keys)
+@bot.on(events.CallbackQuery(pattern="iphone_plan_ex_service:*"))
+async def iphone_plan_ex_service(event):
+    user_id = event.sender_id
+    service_num = int(event.data.decode().split(":")[1])
+    username = str(event.data.decode().split(":")[2])
+    amount = config.amounts[service_num]
+
+    service_name = None
+
+    try:
+
+        service_name = config.one_member_namesـiphone[service_num]
+
+    except KeyError:
+
+        try:
+
+            service_name = config.two_member_names_iphone[service_num]
+
+        except KeyError:
+
+            service_name = config.three_member_names_iphone[service_num]
+
+    keys = [
+
+        [
+
+            Button.inline(bot_text["pay_and_active_ex"], str.encode("iphone_buy_ex_wallet:" + str(service_num) + ":" + str(username)))
 
         ],
 
@@ -4244,6 +4408,58 @@ async def buy_ex_wallet(event):
                 service_name = config.three_member_names[service_num]
 
         await event.reply(bot_text["pay_wallet_sure"].format(service=service_name), buttons=keys)
+@bot.on(events.CallbackQuery(pattern="iphone_buy_ex_wallet:*"))
+async def iphone_buy_ex_wallet(event):
+    user_id = event.sender_id
+
+    is_ban = config.is_ban(user_id)
+
+    if is_ban:
+
+        await event.reply(bot_text["you_banned"])
+
+        return
+
+    await bot.delete_messages(user_id, event.original_update.msg_id)
+
+    service_num = int(event.data.decode().split(":")[1])
+    username = event.data.decode().split(":")[2]
+
+    find_amount = config.amounts[service_num]
+
+    user_inventory = cur.execute(f"SELECT inventory FROM users WHERE user_id = {user_id}").fetchone()[0]
+
+    if user_inventory - int(find_amount) < 0:
+
+        await event.reply(bot_text["none_inventory"])
+
+    else:
+
+        keys = [
+
+            Button.inline(bot_text["yes"], str.encode("iphone_wallet_ex_yes:" + str(service_num) + ":" + str(username))),
+
+            Button.inline(bot_text["no"], b'wallet_no'),
+
+        ]
+
+        service_name = None
+
+        try:
+
+            service_name = config.one_member_namesـiphone[service_num]
+
+        except KeyError:
+
+            try:
+
+                service_name = config.two_member_names_iphone[service_num]
+
+            except KeyError:
+
+                service_name = config.three_member_names_iphone[service_num]
+
+        await event.reply(bot_text["pay_wallet_sure"].format(service=service_name), buttons=keys)
 @bot.on(events.CallbackQuery(pattern="wallet_ex_yes:"))
 async def wallet_ex_yes(event):
     msg_id = event.original_update.msg_id
@@ -4283,6 +4499,52 @@ async def wallet_ex_yes(event):
 
     if response.status_code == 200:
         await event.reply(bot_text["ss_ex"])
+    else:
+
+        user_inventory = cur.execute(f"SELECT inventory FROM users WHERE user_id={user_id}").fetchone()[0]
+
+        user_inventory = int(user_inventory) + int(amount)
+
+        cur.execute(f"UPDATE users SET inventory = {user_inventory} WHERE user_id = {user_id}")
+
+        db.commit()
+
+        await event.reply(bot_text["cant_make_service"])
+@bot.on(events.CallbackQuery(pattern="iphone_wallet_ex_yes:"))
+async def iphone_wallet_ex_yes(event):
+    msg_id = event.original_update.msg_id
+
+    user_id = event.sender_id
+
+    is_ban = config.is_ban(user_id)
+
+    if is_ban:
+
+        await event.reply(bot_text["you_banned"])
+
+        return
+
+    service_num = int(event.data.decode().split(":")[1])
+    username = event.data.decode().split(":")[2]
+    amount = config.amounts[service_num]
+
+    await bot.delete_messages(user_id, msg_id)
+
+    user_inventory = cur.execute(f"SELECT inventory FROM users WHERE user_id={user_id}").fetchone()[0]
+
+    user_inventory = int(user_inventory) - int(amount)
+
+    cur.execute(f"UPDATE users SET inventory = {user_inventory} WHERE user_id = {user_id}")
+
+    to = cur.execute(f"SELECT phone FROM users WHERE user_id = {user_id}").fetchone()[0]
+
+    db.commit()
+
+    loading = await event.reply(bot_text["loading_account"])
+    sub_link = await functions.iphone_extension(username, service_num)
+
+    if sub_link is not None:
+        await event.reply(bot_text["ss_ex_marzban"].format(sub=sub_link))
     else:
 
         user_inventory = cur.execute(f"SELECT inventory FROM users WHERE user_id={user_id}").fetchone()[0]
