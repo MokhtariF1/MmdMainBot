@@ -3973,8 +3973,8 @@ async def sr_extension(event):
 
         return
     keys = [
-        Button.inline(bot_text["vip_extension"], b'vip_extension'),
-        Button.inline(bot_text["iphone_extension"], b'iphone_extension'),
+        [Button.inline(bot_text["vip_extension"], b'vip_extension')],
+        [Button.inline(bot_text["iphone_extension"], b'iphone_extension')]
     ]
     await event.reply(bot_text["select"], buttons=keys)
 
