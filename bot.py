@@ -3543,88 +3543,88 @@ async def serv_info_get(event):
             Button.inline(bot_text["service_info"], str.encode("sr_inf:" + str(username))),
             Button.inline(bot_text["connected_pep"], str.encode("sr_pep:" + str(username)))
         ],
-        [
-            Button.inline(bot_text["change_service_to_iphone"], str.encode("change_service_to_iphone:" + str(username) + ":" + str(service_num)))
-        ]
+        # [
+        #     Button.inline(bot_text["change_service_to_iphone"], str.encode("change_service_to_iphone:" + str(username) + ":" + str(service_num)))
+        # ]
         # [
         #     Button.inline(bot_text["sub_link"], str.encode("sr_vl:" + str(username))),
         #     Button.inline(bot_text["outline"], str.encode("sr_ot:" + str(username)))
         # ],
     ]
     await event.reply(full_text, buttons=keys)
-@bot.on(events.CallbackQuery(pattern="change_service_to_iphone:*"))
-async def change_service_to_iphone(event):
-    user_id = event.sender_id
-    username_panel = event.data.decode().split(":")[1]
-    service_num = event.data.decode().split(":")[2]
-    url = f"{config.panel_api_address}?method=data_user&name={username_panel}&ADMIN=SpeedConnect"
-    response = requests.get(url)
-    response = response.json()
-    total = int(response["total"]) * 1000
-    size = response["size"]
-    update_value_size = int(total) - int(size)
-    expire = functions.calculate_date_difference(response["date_buy"], response["day"]) * 86400
-    username, sub = await functions.get_iphone_service(expire, functions.mega_to_bytes(update_value_size))
-    random_num = randint(1000000, 9999999)
-    # متغیر شروع با زمان فعلی
-    service_name = config.iphone_plan_names[int(service_num)]
-    start_time = time.time()
-
-    # تبدیل زمان به فرمت datetime
-
-    start_datetime = datetime.fromtimestamp(start_time)
-
-    # شرط برای اضافه کردن روز
-
-    if "1 ماهه" in service_name:
-
-        condition = 'add_32_days'  # می‌توانید این مقدار را به 'add_64_days' یا 'add_99_days' تغییر دهید
-
-    elif "2 ماهه" in service_name:
-
-        condition = 'add_64_days'
-
-    elif "3 ماهه" in service_name:
-
-        condition = 'add_99_days'
-
-    else:
-
-        print("نیست")
-
-    if condition == 'add_32_days':
-
-        new_datetime = start_datetime + timedelta(days=32)
-
-    elif condition == 'add_64_days':
-
-        new_datetime = start_datetime + timedelta(days=64)
-
-    elif condition == 'add_99_days':
-
-        new_datetime = start_datetime + timedelta(days=99)
-
-    else:
-
-        new_datetime = start_datetime  # در صورت عدم تطابق، زمان اولیه را برمی‌گرداند
-
-    # تبدیل زمان جدید به timestamp
-
-    new_timestamp = new_datetime.timestamp()
-    cur.execute(
-        f"INSERT INTO iphone_services VALUES ({user_id}, '{username}', '{sub}', '{service_num}', {random_num}, {start_time}, {new_timestamp})")
-    db.commit()
-    print(username, sub)
-    delete_user = f"{config.panel_api_address}?method=delete_user&name={username_panel}&ADMIN=SpeedConnect"
-    response = requests.get(delete_user)
-    print(response.json())
-    text = f"""اشتراک اختصاصی شما حذف شد و اشتراک آیفون برای شما ساخته شد
-لینک اشتراک آیفون شما:
-{sub}
-نام کاربری اشتراک آیفون شما:
-{username}
-"""
-    await event.reply(text)
+# @bot.on(events.CallbackQuery(pattern="change_service_to_iphone:*"))
+# async def change_service_to_iphone(event):
+#     user_id = event.sender_id
+#     username_panel = event.data.decode().split(":")[1]
+#     service_num = event.data.decode().split(":")[2]
+#     url = f"{config.panel_api_address}?method=data_user&name={username_panel}&ADMIN=SpeedConnect"
+#     response = requests.get(url)
+#     response = response.json()
+#     total = int(response["total"]) * 1000
+#     size = response["size"]
+#     update_value_size = int(total) - int(size)
+#     expire = functions.calculate_date_difference(response["date_buy"], response["day"]) * 86400
+#     username, sub = await functions.get_iphone_service(expire, functions.mega_to_bytes(update_value_size))
+#     random_num = randint(1000000, 9999999)
+#     # متغیر شروع با زمان فعلی
+#     service_name = config.iphone_plan_names[int(service_num)]
+#     start_time = time.time()
+#
+#     # تبدیل زمان به فرمت datetime
+#
+#     start_datetime = datetime.fromtimestamp(start_time)
+#
+#     # شرط برای اضافه کردن روز
+#
+#     if "1 ماهه" in service_name:
+#
+#         condition = 'add_32_days'  # می‌توانید این مقدار را به 'add_64_days' یا 'add_99_days' تغییر دهید
+#
+#     elif "2 ماهه" in service_name:
+#
+#         condition = 'add_64_days'
+#
+#     elif "3 ماهه" in service_name:
+#
+#         condition = 'add_99_days'
+#
+#     else:
+#
+#         print("نیست")
+#
+#     if condition == 'add_32_days':
+#
+#         new_datetime = start_datetime + timedelta(days=32)
+#
+#     elif condition == 'add_64_days':
+#
+#         new_datetime = start_datetime + timedelta(days=64)
+#
+#     elif condition == 'add_99_days':
+#
+#         new_datetime = start_datetime + timedelta(days=99)
+#
+#     else:
+#
+#         new_datetime = start_datetime  # در صورت عدم تطابق، زمان اولیه را برمی‌گرداند
+#
+#     # تبدیل زمان جدید به timestamp
+#
+#     new_timestamp = new_datetime.timestamp()
+#     cur.execute(
+#         f"INSERT INTO iphone_services VALUES ({user_id}, '{username}', '{sub}', '{service_num}', {random_num}, {start_time}, {new_timestamp})")
+#     db.commit()
+#     print(username, sub)
+#     delete_user = f"{config.panel_api_address}?method=delete_user&name={username_panel}&ADMIN=SpeedConnect"
+#     response = requests.get(delete_user)
+#     print(response.json())
+#     text = f"""اشتراک اختصاصی شما حذف شد و اشتراک آیفون برای شما ساخته شد
+# لینک اشتراک آیفون شما:
+# {sub}
+# نام کاربری اشتراک آیفون شما:
+# {username}
+# """
+#     await event.reply(text)
 @bot.on(events.CallbackQuery(pattern="iphone_gt_service:*"))
 
 async def iphone_gt_service(event):
