@@ -4562,12 +4562,13 @@ async def sr_inf(event):
     url = f"{config.API_ADDRESS}client-info?username={username}"
     response = requests.get(url=url)
     response = response.json()
-    split_time = response["info"]["date_to"].split("-")
-    year, month, day = int(split_time[0]), int(split_time[1]), int(split_time[2])
-    miladi_date = jdatetime.datetime(year, month, day).date()
-    shamsi_date = jdatetime.date.fromgregorian(date=miladi_date).__str__()
+    # split_time = response["info"]["date_to"].split("-")
+    # year, month, day = int(split_time[0]), int(split_time[1]), int(split_time[2])
+    # miladi_date = jdatetime.datetime(year, month, day).date()
+    # shamsi_date = jdatetime.date.fromgregorian(date=miladi_date).__str__()
+    days = functions.calculate_date_difference(response["info"]["date_buy"], response["info"]["day"])
     keys = [
-        # [Button.inline("انقضا"), Button.inline(shamsi_date)],
+        [Button.inline("زمان باقیمانده"), Button.inline(f" روز{days}")],
         [
             Button.inline("حجم کل"), Button.inline(f'{response["info"]["total"]}G')
         ],
