@@ -4567,7 +4567,7 @@ async def sr_inf(event):
     miladi_date = jdatetime.datetime(year, month, day).date()
     shamsi_date = jdatetime.date.fromgregorian(date=miladi_date).__str__()
     keys = [
-        [Button.inline("انقضا"), Button.inline(shamsi_date)],
+        # [Button.inline("انقضا"), Button.inline(shamsi_date)],
         [
             Button.inline("حجم کل"), Button.inline(f'{response["info"]["total"]}G')
         ],
