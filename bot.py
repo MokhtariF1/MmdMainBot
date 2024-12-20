@@ -59,80 +59,41 @@ back = Button.text(bot_text["back"], resize=1)
 
 home_keys = [
     [
-
-        Button.text(bot_text["test_account"]),
-
-    ],
-
-    [
-
         Button.text(bot_text["new_service"]),
+    ],
+    [
         Button.text(bot_text["service_extension"]),
     ],
-
-
     [
-
         Button.text(bot_text["wallet"]),
+        Button.text(bot_text["test_account"]),
+    ],
+
+    [
         Button.text(bot_text["my_services"]),
-
-    ],
-
-    [
-
-        Button.text(bot_text["get_buy"]),
-
-        Button.text(bot_text["account"]),
-
-    ],
-
-    [
         Button.text(bot_text["download_app"]),
-
-    ]
-
+    ],
 ]
 
 admin_keys = [
-
     [
-
-        Button.text(bot_text["test_account"]),
-
-    ],
-
-    [
-
         Button.text(bot_text["new_service"]),
+    ],
+    [
         Button.text(bot_text["service_extension"]),
     ],
-
-
     [
-
         Button.text(bot_text["wallet"]),
+        Button.text(bot_text["test_account"]),
+    ],
+
+    [
         Button.text(bot_text["my_services"]),
-
-    ],
-
-    [
-
-
-        Button.text(bot_text["account"]),
-        Button.text(bot_text["get_buy"]),
-
-    ],
-
-    [
         Button.text(bot_text["download_app"]),
-
     ],
     [
-
         Button.text(bot_text["panel"]),
-
     ],
-
 ]
 
 @bot.on(events.NewMessage(pattern="/start", incoming=True))
@@ -1352,8 +1313,8 @@ async def message(event):
             ],
 
         ]
-        user_inventory = cur.execute(f"SELECT inventory FROM users WHERE user_id = {user_id}").fetchone()[0]
-        await event.reply(bot_text["pay_war"].format(inventory=user_inventory), buttons=keys)
+        user = cur.execute(f"SELECT inventory,user_id,phone FROM users WHERE user_id = {user_id}").fetchone()
+        await event.reply(bot_text["pay_war"].format(inventory=user[0], user_id=user[1], phone=user[2]), buttons=keys)
     elif text == bot_text["pay_history"]:
 
         history = cur.execute(f"SELECT * FROM pay WHERE user_id = {user_id} AND confirmation = {True}").fetchall()
