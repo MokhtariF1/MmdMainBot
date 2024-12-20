@@ -4611,35 +4611,35 @@ async def iphone_sr_inf(event):
     """
     await event.reply(text, buttons=keys)
 
-@bot.on(events.CallbackQuery(pattern="sr_inf:"))
-async def sr_inf(event):
-    username = event.data.decode().split(":")[1]
-    url = f"{config.API_ADDRESS}client-info?username={username}"
-    response = requests.get(url=url)
-    response = response.json()
-    split_time = response["info"]["date_to"].split("-")
-    year, month, day = int(split_time[0]), int(split_time[1]), int(split_time[2])
-    miladi_date = jdatetime.datetime(year, month, day).date()
-    shamsi_date = jdatetime.date.fromgregorian(date=miladi_date).__str__()
-    keys = [
-        [Button.inline("انقضا"), Button.inline(shamsi_date)],
-        [
-            Button.inline("حجم کل"), Button.inline(f'{response["info"]["total"]}G')
-        ],
-        [
-            Button.inline("حجم مصرفی"), Button.inline(f'{response["info"]["size"]}M')
-        ],
-        [
-            Button.inline("حجم باقیمانده"), Button.inline(f'{response["info"]["full"]}G')
-        ]
-    ]
-    text = f"""مشخصات سرویس
-نام کاربری:{username}
-
-
-پسورد:{response["info"]["password"]}
-    """
-    await event.reply(text, buttons=keys)
+# @bot.on(events.CallbackQuery(pattern="sr_inf:"))
+# async def sr_inf(event):
+#     username = event.data.decode().split(":")[1]
+#     url = f"{config.API_ADDRESS}client-info?username={username}"
+#     response = requests.get(url=url)
+#     response = response.json()
+#     split_time = response["info"]["date_to"].split("-")
+#     year, month, day = int(split_time[0]), int(split_time[1]), int(split_time[2])
+#     miladi_date = jdatetime.datetime(year, month, day).date()
+#     shamsi_date = jdatetime.date.fromgregorian(date=miladi_date).__str__()
+#     keys = [
+#         [Button.inline("انقضا"), Button.inline(shamsi_date)],
+#         [
+#             Button.inline("حجم کل"), Button.inline(f'{response["info"]["total"]}G')
+#         ],
+#         [
+#             Button.inline("حجم مصرفی"), Button.inline(f'{response["info"]["size"]}M')
+#         ],
+#         [
+#             Button.inline("حجم باقیمانده"), Button.inline(f'{response["info"]["full"]}G')
+#         ]
+#     ]
+#     text = f"""مشخصات سرویس
+# نام کاربری:{username}
+#
+#
+# پسورد:{response["info"]["password"]}
+#     """
+#     await event.reply(text, buttons=keys)
 @bot.on(events.CallbackQuery(pattern="iphone_sr_pep:"))
 async def iphone_sr_pep(event):
     username = event.data.decode().split(":")[1]
