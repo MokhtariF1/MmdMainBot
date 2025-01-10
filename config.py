@@ -225,6 +225,8 @@ TEXT = {
     "android": "✅Android",
     "soon": "این بخش به زودی اضافه خواهد شد✅",
     "windows": "✅Windows",
+    "un_ban": "آن بن(کیرم تو کص زنت)",
+    "un_banned": "کاربر آن بن شد، ریدم دهنت کونی این بخشو اضافه کردی",
     "mac": "✅Mac",
     "ios": "✅IOS",
     "linux": "❌Linux(coming soon)",

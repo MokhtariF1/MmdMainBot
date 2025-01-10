@@ -1550,6 +1550,45 @@ async def message(event):
                     except ValueError:
 
                         await conv.send_message(bot_text["just_num"])
+    elif text == bot_text["un_ban"]:
+
+        if user_id in config.ADMINS_LIST:
+
+            async with bot.conversation(user_id, timeout=1000) as conv:
+
+                await conv.send_message(bot_text["enter_user_id"])
+
+                while True:
+
+                    try:
+
+                        user_id_ = await conv.get_response()
+
+                        if user_id_.raw_text == bot_text["back"]:
+
+                            return
+
+                        user_id_ = int(user_id_.raw_text)
+
+                        find_user = cur.execute(f"SELECT * FROM users WHERE user_id = {user_id_}").fetchone()
+
+                        if find_user is not None:
+
+                            cur.execute(f"UPDATE users SET is_ban = {False} WHERE user_id = {user_id_}")
+
+                            db.commit()
+
+                            await event.reply(bot_text["un_banned"])
+
+                            break
+
+                        else:
+
+                            await conv.send_message(bot_text["user_not_found"])
+
+                    except ValueError:
+
+                        await conv.send_message(bot_text["just_num"])
 
     elif text == bot_text["active_test"]:
 
