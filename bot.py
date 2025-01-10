@@ -497,40 +497,15 @@ async def message(event):
     elif text == bot_text["download_app"]:
 
         keys = [
-
             [
-
-                Button.inline(bot_text["android"], b'down_android')
-
+                Button.inline(bot_text["download_site"], b'download_site')
             ],
-
             [
-
-                Button.inline(bot_text["windows"], b'down_windows')
-
+                Button.inline(bot_text["download_channel"], b'download_channel')
             ],
-
-            [
-
-                Button.inline(bot_text["mac"], b'down_mac')
-
-            ],
-
-            [
-
-                Button.inline(bot_text["ios"], b'down_ios')
-
-            ],
-
-            [
-
-                Button.inline(bot_text["linux"], b'soon')
-
-            ],
-
         ]
 
-        await event.reply(bot_text["download_help"])
+        await event.reply(bot_text["select"], buttons=keys)
 
     elif text == bot_text["panel"]:
 
@@ -4665,5 +4640,11 @@ async def iphone_sr_pep(event):
             ]
             keys.append(key)
         await event.reply(text, buttons=keys)
+@bot.on(events.CallbackQuery(data=b'download_site'))
+async def download_site(event):
+    await event.reply(bot_text["download_site_select"])
+@bot.on(events.CallbackQuery(data=b'download_channel'))
+async def download_site(event):
+    await event.reply(bot_text["download_channel_select"])
 bot.run_until_disconnected()
 
