@@ -538,6 +538,9 @@ async def message(event):
                     Button.text(bot_text["change_iphone"])
                 ],
                 [
+                    Button.text(bot_text["un_ban"])
+                ],
+                [
 
                     back
 
