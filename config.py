@@ -1,6 +1,6 @@
 from sqlite3 import connect
 from telethon.tl.functions.channels import GetParticipantsRequest
-from telethon.tl.types import ChannelParticipantsSearch, InputChannel
+from telethon.tl.types import PeerChannel
 import requests
 ENV = 1
 if ENV == 1:
@@ -388,7 +388,7 @@ https://testflight.apple.com/join/FQkEGDfX
 }
 
 async def join_check(user_id, cli):
-    get_info = await cli.get_entity(CHANNEL_ID)
+    get_info = await cli.get_entity(PeerChannel(CHANNEL_ID))
     TELEGRAM_API_URL = f"https://api.telegram.org/bot{BOT_TOKEN}/getChatMember?chat_id=-1001947782337&user_id={user_id}"
     response = requests.post(TELEGRAM_API_URL)
     response = response.json()
