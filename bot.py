@@ -543,11 +543,7 @@ async def message(event):
                 [
 
                     back
-
                 ]
-
-            
-
             ]
 
             await event.reply(bot_text["select"], buttons=keys)
@@ -3373,7 +3369,7 @@ async def yes_wallet(event):
 
         start_datetime = datetime.fromtimestamp(start_time)
 
-
+        condition = None
 
         # شرط برای اضافه کردن روز
 
