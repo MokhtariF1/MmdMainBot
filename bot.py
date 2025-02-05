@@ -3175,7 +3175,7 @@ async def iphone_yes(event):
         start_datetime = datetime.fromtimestamp(start_time)
 
         # شرط برای اضافه کردن روز
-
+        condition = None
         if "1 ماهه" in service_name:
 
             condition = 'add_32_days'  # می‌توانید این مقدار را به 'add_64_days' یا 'add_99_days' تغییر دهید
