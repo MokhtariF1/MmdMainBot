@@ -4021,7 +4021,7 @@ async def vip_extension(event):
                         await conv.send_message(bot_text["password_invalid"])
                         return
                     else:
-                        find_service = cur.execute(f"SELECT * FROM services WHERE username = '{service_username}' AND user_id = {user_id}").fetchone()
+                        find_service = cur.execute(f"SELECT * FROM services WHERE username = '{service_username}'").fetchone()
                         if find_service is None:
                             await conv.send_message(bot_text["service_not_found"])
                             return
@@ -4050,7 +4050,7 @@ async def iphone_extension(event):
         else:
             username = username.raw_text
             find_service = cur.execute(
-                f"SELECT * FROM iphone_services WHERE username = '{username}' AND user_id = {user_id}").fetchone()
+                f"SELECT * FROM iphone_services WHERE username = '{username}'").fetchone()
             if find_service is None:
                 await conv.send_message(bot_text["service_not_found"])
                 return
