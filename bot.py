@@ -3254,7 +3254,7 @@ async def iphone_yes(event):
                 Button.inline(bot_text["help_use"], b'help_use')
             ],
         ]
-        await event.reply(full_text, buttons=key)
+        await event.reply(full_text, buttons=key, parse_mode="html")
 
         username_sms = config.sms_username
 
