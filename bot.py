@@ -3249,7 +3249,10 @@ async def iphone_yes(event):
         service_value = service_name.split("-")[0]
         key = [
             [Button.inline(service_time), Button.inline("زمان سرویس")],
-            [Button.inline(service_value), Button.inline("حجم سرویس")]
+            [Button.inline(service_value), Button.inline("حجم سرویس")],
+            [
+                Button.inline(bot_text["help_use"], b'help_use')
+            ],
         ]
         await event.reply(full_text, buttons=key)
 
@@ -3447,6 +3450,7 @@ async def yes_wallet(event):
         key = [
             [Button.inline(service_time), Button.inline("زمان سرویس")],
             [Button.inline(service_value), Button.inline("حجم سرویس")]
+            [Button.inline(bot_text["help_use"], b'help_use')]
         ]
         await event.reply(full_text, buttons=key)
 
@@ -4590,7 +4594,10 @@ async def sr_inf(event):
         ],
         [
             Button.inline("حجم باقیمانده"), Button.inline(f'{response["info"]["full"]}G')
-        ]
+        ],
+        [
+            Button.inline(bot_text["help_use"], b'help_use')
+        ],
     ]
     text = f"""مشخصات سرویس
 نام کاربری:{username}
@@ -4614,6 +4621,9 @@ async def iphone_sr_inf(event):
         # ],
         [
             Button.inline("حجم مصرفی"), Button.inline(f"{used_traffic}G")
+        ],
+        [
+            Button.inline(bot_text["help_use"], b'help_use')
         ],
         # [
         #     Button.inline("حجم باقیمانده"), Button.inline(f"{response["info"]["full"]}G")
@@ -4684,5 +4694,8 @@ async def download_site(event):
 @bot.on(events.CallbackQuery(data=b'download_channel'))
 async def download_site(event):
     await event.reply(bot_text["download_channel_select"])
+@bot.on(events.CallbackQuery(data=b'help_use'))
+async def help_use(event):
+    await event.reply(bot_text["help_use_text"])
 bot.run_until_disconnected()
 
