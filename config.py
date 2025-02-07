@@ -391,6 +391,7 @@ https://testflight.apple.com/join/FQkEGDfX
 @SPEEDCONNECT_HELPUSER
 
 در صورتی که هر زمان مشکلی در اتصال داشتید با پشتیبانی هماهنگ باشید.""",
+
 }
 
 async def join_check(user_id, cli):

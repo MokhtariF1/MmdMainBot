@@ -3242,7 +3242,7 @@ async def iphone_yes(event):
 
 ⚡️ اطلاعات حساب کاربری شما عبارت است از :
 
-نام کاربری : {username} 
+نام کاربری : {username}
 لینک اشتراک : {sub_link}
 📌 مشخصات حساب کاربری شما نیز به قرار زیر است:"""
         service_time = service_name.split("-")[1]
@@ -3449,7 +3449,7 @@ async def yes_wallet(event):
         service_value = service_name.split("-")[0]
         key = [
             [Button.inline(service_time), Button.inline("زمان سرویس")],
-            [Button.inline(service_value), Button.inline("حجم سرویس")]
+            [Button.inline(service_value), Button.inline("حجم سرویس")],
             [Button.inline(bot_text["help_use"], b'help_use')]
         ]
         await event.reply(full_text, buttons=key)
