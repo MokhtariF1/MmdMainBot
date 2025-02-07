@@ -3286,7 +3286,7 @@ async def iphone_yes(event):
 
         test = sms_soap.send_by_base_number(f"{username};بدون رمز عبور", to, 239802)
 
-        print(test)
+        print("_______", test)
 
     else:
 
