@@ -3243,7 +3243,7 @@ async def iphone_yes(event):
 ⚡️ اطلاعات حساب کاربری شما عبارت است از :
 
 نام کاربری : {username}
-لینک اشتراک : {sub_link}
+لینک اشتراک : <blockquote><code>{sub_link}</code></blockquote>
 📌 مشخصات حساب کاربری شما نیز به قرار زیر است:"""
         service_time = service_name.split("-")[1]
         service_value = service_name.split("-")[0]
