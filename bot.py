@@ -1,7 +1,7 @@
 import os
 from calendar import month
 
-from telethon import TelegramClient, events, Button
+from telethon import TelegramClient, events, Button, connection
 
 from datetime import datetime, timedelta
 
@@ -29,16 +29,14 @@ import pytz
 
 import functions
 
-
-
 if config.PROXY is False:
 
     proxy = None
 
 else:
 
-    proxy = ("socks5", "127.0.0.1", 2080)
-
+    proxy = ("socks5", "127.0.0.1", 10808)
+    # proxy = ("7781.Ir.ir.ir.ir.ir.zban-mas.info", 8888, "7gAA8A8Pd1VV____9QBuLmltZWRpYS5zdGVhbXBvd2VyZWQuY29t")
 print("connecting...")
 
 bot = TelegramClient("bot", config.API_ID, config.API_HASH, proxy=proxy)
@@ -46,8 +44,6 @@ bot = TelegramClient("bot", config.API_ID, config.API_HASH, proxy=proxy)
 bot.start(bot_token=config.BOT_TOKEN)
 
 print("connected!")
-
-
 
 db = connect("bot.db")
 
@@ -96,8 +92,8 @@ admin_keys = [
     ],
 ]
 
-@bot.on(events.NewMessage(pattern="/start", incoming=True))
 
+@bot.on(events.NewMessage(pattern="/start", incoming=True))
 async def start(event):
     print("/start")
     user_id = event.sender_id
@@ -155,7 +151,6 @@ async def start(event):
                 is_ban = config.is_ban(user_id)
 
                 if is_ban:
-
                     await event.reply(bot_text["you_banned"])
 
                     return
@@ -163,7 +158,6 @@ async def start(event):
                 user = cur.execute(f"SELECT * FROM users WHERE user_id = {user_id}").fetchone()
 
                 if user[2] is None:
-
                     keys = [
 
                         [
@@ -213,7 +207,6 @@ async def start(event):
                 user = cur.execute(f"SELECT * FROM users WHERE user_id = {user_id}").fetchone()
 
                 if user[2] is None:
-
                     keys = [
 
                         [
@@ -241,7 +234,6 @@ async def start(event):
                 user = cur.execute(f"SELECT * FROM users WHERE user_id = {user_id}").fetchone()
 
                 if user[2] is None:
-
                     keys = [
 
                         [
@@ -281,7 +273,6 @@ async def start(event):
             user = cur.execute(f"SELECT * FROM users WHERE user_id = {user_id}").fetchone()
 
             if user[2] is None:
-
                 keys = [
                     [
 
@@ -314,7 +305,6 @@ async def start(event):
             user = cur.execute(f"SELECT * FROM users WHERE user_id = {user_id}").fetchone()
 
             if user[2] is None:
-
                 keys = [
 
                     [
@@ -343,15 +333,14 @@ async def start(event):
 
                 await event.reply(bot_text["select"], buttons=home_keys)
 
+
 @bot.on(events.NewMessage(incoming=True))
 async def message(event):
-
     user_id = event.sender_id
 
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -385,7 +374,6 @@ async def message(event):
     user = cur.execute(f"SELECT * FROM users WHERE user_id = {user_id}").fetchone()
     if user is not None:
         if user[2] is None:
-
             keys = [
 
                 [
@@ -510,7 +498,6 @@ async def message(event):
     elif text == bot_text["panel"]:
 
         if user_id in config.ADMINS_LIST:
-
             keys = [
 
                 [Button.text(bot_text["all_send"], resize=1)],
@@ -588,7 +575,6 @@ async def message(event):
                         user_id_ = await conv.get_response()
 
                         if user_id_.raw_text == bot_text["back"]:
-
                             return
 
                         user_id_ = int(user_id_.raw_text)
@@ -615,13 +601,20 @@ async def message(event):
 
                                 [
 
-                                    Button.inline(bot_text["user_services"], str.encode("user_services:" + str(user_id_)))
+                                    Button.inline(bot_text["user_services"],
+                                                  str.encode("user_services:" + str(user_id_)))
 
                                 ]
 
                             ]
 
-                            await bot.send_message(user_id, bot_text["user_info_content"].format(user_name=user_full_name, username=username_, user_phone=user_phone, user_inventory=user_inventory, service_count=service_count_), buttons=keys_user_info)
+                            await bot.send_message(user_id,
+                                                   bot_text["user_info_content"].format(user_name=user_full_name,
+                                                                                        username=username_,
+                                                                                        user_phone=user_phone,
+                                                                                        user_inventory=user_inventory,
+                                                                                        service_count=service_count_),
+                                                   buttons=keys_user_info)
 
                             break
 
@@ -648,7 +641,6 @@ async def message(event):
                         user_id_ = await conv.get_response()
 
                         if user_id_.raw_text == bot_text["back"]:
-
                             return
 
                         user_id_ = int(user_id_.raw_text)
@@ -675,7 +667,7 @@ async def message(event):
 
                     except ValueError:
 
-                        await conv.send_message(bot_text["just_num"])            
+                        await conv.send_message(bot_text["just_num"])
 
     elif text == bot_text["back"]:
 
@@ -696,7 +688,6 @@ async def message(event):
         user_inventory = user[1]
 
         if user_phone is None:
-
             keys = [
 
                 [
@@ -719,7 +710,8 @@ async def message(event):
         services = len(cur.execute(f"SELECT * FROM services WHERE user_id = {user_id}").fetchall())
         suc_pay = len(cur.execute(f"SELECT * FROM pay WHERE user_id = {user_id} AND confirmation = {True}").fetchall())
         no_pay = len(cur.execute(f"SELECT * FROM pay WHERE user_id = {user_id} AND confirmation = {False}").fetchall())
-        full_text = bot_text["user_info_text"].format(user_id=user_id, phone=user_phone, inventory=user_inventory, sr=services, ok_pay=suc_pay, no_pay=no_pay)
+        full_text = bot_text["user_info_text"].format(user_id=user_id, phone=user_phone, inventory=user_inventory,
+                                                      sr=services, ok_pay=suc_pay, no_pay=no_pay)
 
         await event.reply(full_text, buttons=back)
 
@@ -728,7 +720,6 @@ async def message(event):
         user = cur.execute(f"SELECT * FROM users WHERE user_id = {user_id}").fetchone()
 
         if user[2] is None:
-
             keys = [
 
                 [
@@ -767,18 +758,18 @@ async def message(event):
 
         ]
 
-        await event.reply(bot_text["charge_text"], buttons= charge_keys)
+        await event.reply(bot_text["charge_text"], buttons=charge_keys)
 
-    elif text == bot_text["new_service"]:
-        select_keys = [
-            [
-                Button.inline(bot_text["new_service"], b"serv_new")
-            ],
-            [
-                Button.inline(bot_text["iphone_account"], b"buy_iphone_account")
-            ]
-        ]
-        await event.reply(bot_text["select"], buttons=select_keys)
+    # elif text == bot_text["new_service"]:
+    #     select_keys = [
+    #         [
+    #             Button.inline(bot_text["new_service"], b"serv_new")
+    #         ],
+    #         # [
+    #         #     Button.inline(bot_text["iphone_account"], b"buy_iphone_account")
+    #         # ]
+    #     ]
+    #     await event.reply(bot_text["select"], buttons=select_keys)
 
     elif text == bot_text["test_account"]:
 
@@ -794,7 +785,8 @@ async def message(event):
             end = time.time() + 86400
             test_num = randint(1000, 9999)
 
-            cur.execute(f"INSERT INTO test_account VALUES ({user_id}, '{username_test}', '{password_test}', {test_num}, {end}, {False})")
+            cur.execute(
+                f"INSERT INTO test_account VALUES ({user_id}, '{username_test}', '{password_test}', {test_num}, {end}, {False})")
 
             db.commit()
 
@@ -808,7 +800,8 @@ async def message(event):
 
                 username_test, password_test = response["username"], response["password"]
 
-                cur.execute(f"UPDATE test_account SET username = '{username_test}', password = '{password_test}' WHERE test_num = {test_num}")
+                cur.execute(
+                    f"UPDATE test_account SET username = '{username_test}', password = '{password_test}' WHERE test_num = {test_num}")
 
                 db.commit()
 
@@ -838,7 +831,8 @@ async def message(event):
 
                 password_test = None
                 end = time.time() + 86400
-                cur.execute(f"INSERT INTO test_account VALUES ({user_id}, '{username_test}', '{password_test}', {test_num}, {end}, {False})")
+                cur.execute(
+                    f"INSERT INTO test_account VALUES ({user_id}, '{username_test}', '{password_test}', {test_num}, {end}, {False})")
 
                 db.commit()
 
@@ -856,7 +850,8 @@ async def message(event):
 
                     username_test, password_test = response["username"], response["password"]
 
-                    cur.execute(f"UPDATE test_account SET username = '{username_test}', password = '{password_test}' WHERE test_num = {test_num}")
+                    cur.execute(
+                        f"UPDATE test_account SET username = '{username_test}', password = '{password_test}' WHERE test_num = {test_num}")
 
                     db.commit()
 
@@ -881,7 +876,6 @@ async def message(event):
         user = cur.execute(f"SELECT * FROM users WHERE user_id = {user_id}").fetchone()
 
         if user[2] is None:
-
             keys = [
 
                 [
@@ -953,10 +947,9 @@ async def message(event):
                     amount = amount.raw_text
 
                     if amount == bot_text["back"]:
-
                         await conv.cancel_all()
 
-                    if int(amount) < 10000:
+                    if int(amount) < config.min_amount:
 
                         await conv.send_message(bot_text["small_amount"])
 
@@ -977,13 +970,11 @@ async def message(event):
             name = await conv.get_response()
 
             if name.media is not None:
-
                 await conv.send_message(bot_text["dont_image"])
 
                 return
 
             if name.raw_text == bot_text["back"]:
-
                 return
 
             phone = cur.execute(f"SELECT phone FROM users WHERE user_id = {user_id}").fetchone()[0]
@@ -1022,7 +1013,8 @@ async def message(event):
 
                 track_id = response["trackId"]
 
-                cur.execute(f"INSERT INTO pay VALUES ({user_id}, {amount}, '{name.raw_text}', '{phone}', '{None}', '{None}', 'zibal', {track_id}, '{pay_type}', {False}, '{None}')")
+                cur.execute(
+                    f"INSERT INTO pay VALUES ({user_id}, {amount}, 'ثبت نشده', '{phone}', '{None}', '{None}', 'zibal', {track_id}, '{pay_type}', {False}, '{None}')")
 
                 db.commit()
 
@@ -1030,7 +1022,8 @@ async def message(event):
 
                     [
 
-                        Button.url(bot_text["pay_url"].format(amount=amount), f"https://gateway.zibal.ir/start/{track_id}")
+                        Button.url(bot_text["pay_url"].format(amount=amount),
+                                   f"https://gateway.zibal.ir/start/{track_id}")
 
                     ],
 
@@ -1051,7 +1044,6 @@ async def message(event):
         user = cur.execute(f"SELECT * FROM users WHERE user_id = {user_id}").fetchone()
 
         if user[2] is None:
-
             keys = [
 
                 [
@@ -1123,10 +1115,9 @@ async def message(event):
                     amount = amount.raw_text
 
                     if amount == bot_text["back"]:
-
                         await conv.cancel_all()
 
-                    if int(amount) < 10000:
+                    if int(amount) < config.min_amount:
 
                         await conv.send_message(bot_text["small_amount"])
 
@@ -1147,13 +1138,11 @@ async def message(event):
             name = await conv.get_response()
 
             if name.media is not None:
-
                 await conv.send_message(bot_text["dont_image"])
 
                 return
 
             if name.raw_text == bot_text["back"]:
-
                 return
 
             phone = cur.execute(f"SELECT phone FROM users WHERE user_id = {user_id}").fetchone()[0]
@@ -1173,19 +1162,18 @@ async def message(event):
                 else:
 
                     if image.raw_text == bot_text["back"]:
-
                         return
 
                     await conv.send_message(bot_text["just_media"])
 
-            code = randint(1000, 9999)
+            code = randint(100000000, 999999999)
 
-            cur.execute(f"INSERT INTO pay VALUES ({user_id}, {amount}, '{name.raw_text}', {phone}, '{None}', {code}, 'cart', '{None}', 'wallet', {False}, '{path}')")
+            cur.execute(
+                f"INSERT INTO pay VALUES ({user_id}, {amount}, 'ثبت نشده', {phone}, '{None}', {code}, 'cart', '{None}', 'wallet', {False}, '{path}')")
 
             db.commit()
 
             for admin in config.ADMINS_LIST:
-
                 find_pay = cur.execute(f"SELECT * FROM pay WHERE code = {code}").fetchone()
 
                 phone = find_pay[3]
@@ -1206,7 +1194,8 @@ async def message(event):
 
                 now_hms = now_hms[0] + ":" + now_hms[1] + ":" + now_hms[2]
 
-                now_string_ = jdatetime.date.fromgregorian(day=iran_time.day, month=iran_time.month, year=iran_time.year)
+                now_string_ = jdatetime.date.fromgregorian(day=iran_time.day, month=iran_time.month,
+                                                           year=iran_time.year)
 
                 now_string = str(now_string_).split("-")
 
@@ -1258,7 +1247,11 @@ async def message(event):
 
                 ]
 
-                await bot.send_message(admin, bot_text["new_pay_cart"].format(user_id=user_id, name=desc, phone=phone, time=now_hms, date=time_s, code=code, amount=int(amount), pay_type=fa_pay_type[pay_type]), file=path, buttons=conf_keys)
+                await bot.send_message(admin, bot_text["new_pay_cart"].format(user_id=user_id, name=desc, phone=phone,
+                                                                              time=now_hms, date=time_s, code=code,
+                                                                              amount=int(amount),
+                                                                              pay_type=fa_pay_type[pay_type]),
+                                       file=path, buttons=conf_keys)
 
             await conv.send_message(bot_text["cart_send_admin"])
 
@@ -1273,22 +1266,21 @@ async def message(event):
         #
         # await event.reply(bot_text["select"], buttons=key)
         keys = [
-
             [
-
-                Button.inline(bot_text["pay_link_cart"], b'cart_pay')
-
+                Button.inline(bot_text["up_user_inventory"], b'up_inventory')
             ],
-
-            [
-
-                Button.inline(bot_text["pay_link_zibal"], b'pay_zibal')
-
-            ],
-
         ]
         user = cur.execute(f"SELECT inventory,user_id,phone FROM users WHERE user_id = {user_id}").fetchone()
-        await event.reply(bot_text["pay_war"].format(inventory=user[0], user_id=user[1], phone=user[2]), buttons=keys)
+        user_get = await bot.get_entity(int(user[1]))
+        user_full_name = user_get.first_name if user_get.last_name is None else user_get.first_name + user_get.last_name
+        service_count = len(cur.execute(f"SELECT * FROM services WHERE user_id = {user_id}").fetchall())
+        group = cur.execute(f"SELECT user_type FROM users WHERE user_id = {user_id}").fetchone()[0]
+        print(group)
+        user_type = "عادی" if group == "normal" else "نماینده"
+        await event.reply(
+            bot_text["pay_war"].format(inventory=user[0], user_id=user[1], phone=user[2], name=user_full_name,
+                                       service_count=service_count, group=user_type),
+            buttons=keys)
     elif text == bot_text["pay_history"]:
 
         history = cur.execute(f"SELECT * FROM pay WHERE user_id = {user_id} AND confirmation = {True}").fetchall()
@@ -1296,7 +1288,6 @@ async def message(event):
         keys = []
 
         for pay in history:
-
             pay_code = pay[5]
 
             key = [
@@ -1324,7 +1315,6 @@ async def message(event):
         history = cur.execute(f"SELECT * FROM services WHERE user_id = {user_id}").fetchall()
 
         if len(history) == 0:
-
             key = Button.inline(bot_text["go_buy"], b'new_service_go')
 
             await event.reply(bot_text["not_service"], buttons=key)
@@ -1334,12 +1324,11 @@ async def message(event):
         keys = []
 
         for service in history:
-
             serv_code = service[3]
 
             random_num = service[4]
 
-            service_name = service[1]        
+            service_name = service[1]
 
             key = [
 
@@ -1354,7 +1343,6 @@ async def message(event):
         history = cur.execute(f"SELECT * FROM iphone_services WHERE user_id = {user_id}").fetchall()
 
         if len(history) == 0:
-
             key = Button.inline(bot_text["go_buy"], b'new_service_go')
 
             await event.reply(bot_text["not_service"], buttons=key)
@@ -1364,7 +1352,6 @@ async def message(event):
         keys = []
 
         for service in history:
-
             serv_code = service[3]
 
             random_num = service[4]
@@ -1373,7 +1360,8 @@ async def message(event):
 
             key = [
 
-                Button.inline(str(service_name), str.encode("iphone_gt_service:" + str(serv_code) + ":" + str(random_num)))
+                Button.inline(str(service_name),
+                              str.encode("iphone_gt_service:" + str(serv_code) + ":" + str(random_num)))
 
             ]
 
@@ -1395,7 +1383,6 @@ async def message(event):
                         user_id_ = await conv.get_response()
 
                         if user_id_.raw_text == bot_text["back"]:
-
                             return
 
                         user_id_ = int(user_id_.raw_text)
@@ -1417,10 +1404,10 @@ async def message(event):
                                     amount = int(amount)
 
                                     if amount == bot_text["back"]:
-
                                         return
 
-                                    user_inventory = int(cur.execute(f"SELECT inventory FROM users WHERE user_id = {user_id_}").fetchone()[0])
+                                    user_inventory = int(cur.execute(
+                                        f"SELECT inventory FROM users WHERE user_id = {user_id_}").fetchone()[0])
 
                                     if user_inventory - amount < 0:
 
@@ -1430,7 +1417,8 @@ async def message(event):
 
                                         user_inventory -= amount
 
-                                        cur.execute(f"UPDATE users SET inventory = {user_inventory} WHERE user_id = {user_id_}")
+                                        cur.execute(
+                                            f"UPDATE users SET inventory = {user_inventory} WHERE user_id = {user_id_}")
 
                                         await conv.send_message(bot_text["su_down"])
 
@@ -1463,7 +1451,6 @@ async def message(event):
                         user_id_ = await conv.get_response()
 
                         if user_id_.raw_text == bot_text["back"]:
-
                             return
 
                         user_id_ = int(user_id_.raw_text)
@@ -1485,14 +1472,15 @@ async def message(event):
                                     amount = int(amount)
 
                                     if amount == bot_text["back"]:
-
                                         return
 
-                                    user_inventory = int(cur.execute(f"SELECT inventory FROM users WHERE user_id = {user_id_}").fetchone()[0])
+                                    user_inventory = int(cur.execute(
+                                        f"SELECT inventory FROM users WHERE user_id = {user_id_}").fetchone()[0])
 
                                     user_inventory += amount
 
-                                    cur.execute(f"UPDATE users SET inventory = {user_inventory} WHERE user_id = {user_id_}")
+                                    cur.execute(
+                                        f"UPDATE users SET inventory = {user_inventory} WHERE user_id = {user_id_}")
 
                                     await conv.send_message(bot_text["su_up"])
 
@@ -1525,7 +1513,6 @@ async def message(event):
                         user_id_ = await conv.get_response()
 
                         if user_id_.raw_text == bot_text["back"]:
-
                             return
 
                         user_id_ = int(user_id_.raw_text)
@@ -1564,7 +1551,6 @@ async def message(event):
                         user_id_ = await conv.get_response()
 
                         if user_id_.raw_text == bot_text["back"]:
-
                             return
 
                         user_id_ = int(user_id_.raw_text)
@@ -1604,7 +1590,6 @@ async def message(event):
                         user_id_ = await conv.get_response()
 
                         if user_id_.raw_text == bot_text["back"]:
-
                             return
 
                         user_id_ = int(user_id_.raw_text)
@@ -1683,16 +1668,14 @@ async def message(event):
 
                         continue
 
+
 @bot.on(events.CallbackQuery(pattern="cart_conf:"))
-
 async def cart_conf(event):
-
     user_id = event.sender_id
 
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -1700,7 +1683,6 @@ async def cart_conf(event):
     user = cur.execute(f"SELECT * FROM users WHERE user_id = {user_id}").fetchone()
 
     if user[2] is None:
-
         keys = [
 
             [
@@ -1728,13 +1710,11 @@ async def cart_conf(event):
         pay = cur.execute(f"SELECT * FROM pay WHERE code = {code}").fetchone()
 
         if pay is None:
-
             await bot.send_message(user_id, bot_text["pay_not_found"])
 
             return
 
         if pay[9]:
-
             await bot.send_message(user_id, bot_text["pay_before_conf"])
 
             return
@@ -1753,12 +1733,12 @@ async def cart_conf(event):
 
         now_hms = now_hms[0] + ":" + now_hms[1] + ":" + now_hms[2]
 
-        cur.execute(f"""UPDATE pay SET confirmation = {True}, date_time = '{str(now_string_) + " " + now_hms}' WHERE code = {code}""")
+        cur.execute(
+            f"""UPDATE pay SET confirmation = {True}, date_time = '{str(now_string_) + " " + now_hms}' WHERE code = {code}""")
 
         db.commit()
 
         for admin in config.ADMINS_LIST:
-
             await bot.send_message(admin, bot_text["admin_pay_conf"].format(code=code))
 
         pay_user_id = pay[0]
@@ -1774,9 +1754,8 @@ async def cart_conf(event):
         pay_date = str(now_string_)
 
         pay_time = str(now_hms)
-        
-        if pay_type == "wallet":
 
+        if pay_type == "wallet":
             user_inventory = cur.execute(f"SELECT inventory FROM users WHERE user_id = {pay_user_id}").fetchone()[0]
 
             user_inventory += pay_amount
@@ -1829,20 +1808,21 @@ async def cart_conf(event):
 
         print(pay_user_id)
 
-        await bot.send_message(pay_user_id, bot_text["user_pay_conf"].format(amount=int(pay_amount), amount_two=int(pay_amount), name=pay_desc, phone=pay_phone, pay_type=fa_pay_type[pay_type], time=pay_time, date=time_s, code=code))
-
+        # await bot.send_message(pay_user_id,
+        #                        bot_text["user_pay_conf"].format(amount=int(pay_amount), amount_two=int(pay_amount),
+        #                                                         name=pay_desc, phone=pay_phone,
+        #                                                         pay_type=fa_pay_type[pay_type], time=pay_time,
+        #                                                         date=time_s, code=code))
+        await bot.send_message(pay_user_id, bot_text["user_pay_conf_new"].format(amount=pay_amount))
 
 
 @bot.on(events.CallbackQuery(pattern="zibal_conf:"))
-
 async def zibal_conf(event):
-
     user_id = event.sender_id
 
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -1850,7 +1830,6 @@ async def zibal_conf(event):
     user = cur.execute(f"SELECT * FROM users WHERE user_id = {user_id}").fetchone()
 
     if user[2] is None:
-
         keys = [
 
             [
@@ -1917,7 +1896,7 @@ async def zibal_conf(event):
 
         if conf_pay["status"] == 1:
 
-            code = randint(1000, 9999)
+            code = randint(100000000, 999999999)
 
             now = datetime.now()
 
@@ -1971,7 +1950,8 @@ async def zibal_conf(event):
 
             now_hms = now_hms[0] + ":" + now_hms[1] + ":" + now_hms[2]
 
-            cur.execute(f"""UPDATE pay SET date_time = '{str(now_string_) + " " + now_hms}', code = {code}, confirmation={True} WHERE track_id = {track_id}""")
+            cur.execute(
+                f"""UPDATE pay SET date_time = '{str(now_string_) + " " + now_hms}', code = {code}, confirmation={True} WHERE track_id = {track_id}""")
 
             find_pay = cur.execute(f"SELECT * FROM pay WHERE code = {code}").fetchone()
 
@@ -1995,16 +1975,22 @@ async def zibal_conf(event):
 
                 db.commit()
 
-                await event.reply(bot_text["zibal_pay_ok_wallet"].format(time=now_hms, code=code, amount_two=int(conf_pay["amount"]) // 10, inventory=user_inventory, date=time_s, pay_type=fa_pay_type[find_pay[8]], amount=int(conf_pay["amount"]) // 10))
+                await event.reply(bot_text["zibal_pay_ok_wallet"].format(time=now_hms, code=code,
+                                                                         amount_two=int(conf_pay["amount"]) // 10,
+                                                                         inventory=user_inventory, date=time_s,
+                                                                         pay_type=fa_pay_type[find_pay[8]],
+                                                                         amount=int(conf_pay["amount"]) // 10))
 
             else:
 
-                await event.reply(bot_text["zibal_pay_ok"].format(time=now_hms, code=code, amount_two=int(conf_pay["amount"]) // 10, inventory=user_inventory, date=time_s, pay_type=fa_pay_type[find_pay[8]]))
+                await event.reply(
+                    bot_text["zibal_pay_ok"].format(time=now_hms, code=code, amount_two=int(conf_pay["amount"]) // 10,
+                                                    inventory=user_inventory, date=time_s,
+                                                    pay_type=fa_pay_type[find_pay[8]]))
 
             await bot.delete_messages(user_id, event.original_update.msg_id)
 
             for admin in config.ADMINS_LIST:
-
                 phone = find_pay[3]
 
                 desc = find_pay[2]
@@ -2017,7 +2003,10 @@ async def zibal_conf(event):
 
                 }
 
-                await bot.send_message(admin, bot_text["new_pay_zibal"].format(user_id=user_id, name=desc, phone=phone, time=now_hms, date=time_s, code=code, amount=int(conf_pay["amount"]) // 10, pay_type=fa_pay_type[pay_type]))
+                await bot.send_message(admin, bot_text["new_pay_zibal"].format(user_id=user_id, name=desc, phone=phone,
+                                                                               time=now_hms, date=time_s, code=code,
+                                                                               amount=int(conf_pay["amount"]) // 10,
+                                                                               pay_type=fa_pay_type[pay_type]))
 
         else:
 
@@ -2028,17 +2017,13 @@ async def zibal_conf(event):
         await event.reply(bot_text["zibal_not_pay"])
 
 
-
 @bot.on(events.CallbackQuery(data=b'wallet_with_draw'))
-
 async def wallet_with_draw(event):
-
     user_id = event.sender_id
 
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -2072,7 +2057,6 @@ async def wallet_with_draw(event):
         user_inventory = cur.execute(f"SELECT inventory FROM users WHERE user_id = {user_id}").fetchone()[0]
 
         if user_inventory - amount < 0:
-
             await event.reply(bot_text["none_inventory"])
 
             return
@@ -2125,15 +2109,19 @@ async def wallet_with_draw(event):
 
         time_s = f"{day} {month_s[month]} {year}"
 
-        code = randint(1000, 9999)
+        code = randint(100000000, 999999999)
 
-        cur.execute(f"""INSERT INTO pay VALUES ({user_id}, {amount}, 'خالی', 'خالی', '{str(now_string_) + " " + now_hms}', {code}, 'cart', '{None}', 'direct', {True}, '{None}')""")
+        cur.execute(
+            f"""INSERT INTO pay VALUES ({user_id}, {amount}, 'خالی', 'خالی', '{str(now_string_) + " " + now_hms}', {code}, 'cart', '{None}', 'direct', {True}, '{None}')""")
 
         cur.execute(f"""UPDATE users SET inventory = {user_inventory - amount} WHERE user_id = {user_id}""")
 
         db.commit()
 
-        await event.reply(bot_text["wallet_with_draw"].format(amount=amount, amount_two=amount, pay_type="مستقیم", name="خالی", phone="خالی", date=time_s, time=now_hms, code=code))
+        await event.reply(
+            bot_text["wallet_with_draw"].format(amount=amount, amount_two=amount, pay_type="مستقیم", name="خالی",
+                                                phone="خالی", date=time_s, time=now_hms, code=code))
+
 
 # @bot.on(events.CallbackQuery(data=b'charge_wallet'))
 #
@@ -2165,7 +2153,7 @@ async def wallet_with_draw(event):
 #
 #     #                 await conv.cancel_all()
 #
-#     #             if int(amount) < 10000:
+#     #             if int(amount) < config.min_amount:
 #
 #     #                 await conv.send_message(bot_text["small_amount"])
 #
@@ -2217,17 +2205,13 @@ async def wallet_with_draw(event):
 #     await event.reply(bot_text["pay_war"].format(inventory=), buttons=keys)
 
 
-
 @bot.on(events.CallbackQuery(data=b'pay_zibal'))
-
 async def zibal_pay(event):
-
     user_id = event.sender_id
 
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -2235,7 +2219,6 @@ async def zibal_pay(event):
     user = cur.execute(f"SELECT * FROM users WHERE user_id = {user_id}").fetchone()
 
     if user[2] is None:
-
         keys = [
 
             [
@@ -2307,10 +2290,9 @@ async def zibal_pay(event):
                 amount = amount.raw_text
 
                 if amount == bot_text["back"]:
-
                     await conv.cancel_all()
 
-                if int(amount) < 10000:
+                if int(amount) < config.min_amount:
 
                     await conv.send_message(bot_text["small_amount"])
 
@@ -2331,13 +2313,11 @@ async def zibal_pay(event):
         name = await conv.get_response()
 
         if name.media is not None:
-
             await conv.send_message(bot_text["dont_image"])
 
             return
 
         if name.raw_text == bot_text["back"]:
-
             return
 
         phone = cur.execute(f"SELECT phone FROM users WHERE user_id = {user_id}").fetchone()[0]
@@ -2376,7 +2356,8 @@ async def zibal_pay(event):
 
             track_id = response["trackId"]
 
-            cur.execute(f"INSERT INTO pay VALUES ({user_id}, {amount}, '{name.raw_text}', '{phone}', '{None}', '{None}', 'zibal', {track_id}, '{pay_type}', {False}, '{None}')")
+            cur.execute(
+                f"INSERT INTO pay VALUES ({user_id}, {amount}, 'ثبت نشده', '{phone}', '{None}', '{None}', 'zibal', {track_id}, '{pay_type}', {False}, '{None}')")
 
             db.commit()
 
@@ -2400,16 +2381,14 @@ async def zibal_pay(event):
 
             await event.reply(bot_text["zibal_ok"].format(amount=int(amount), phone=find_user_phone), buttons=key)
 
+
 @bot.on(events.CallbackQuery(data=b'cart_pay'))
-
 async def cart_pay(event):
-
     user_id = event.sender_id
 
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -2417,7 +2396,6 @@ async def cart_pay(event):
     user = cur.execute(f"SELECT * FROM users WHERE user_id = {user_id}").fetchone()
 
     if user[2] is None:
-
         keys = [
 
             [
@@ -2477,7 +2455,7 @@ async def cart_pay(event):
         #     return
 
         pay_type = "wallet"
-
+        name = None
         await conv.send_message(bot_text["enter_amount"])
 
         while True:
@@ -2489,10 +2467,9 @@ async def cart_pay(event):
                 amount = amount.raw_text
 
                 if amount == bot_text["back"]:
-
                     await conv.cancel_all()
 
-                if int(amount) < 10000:
+                if int(amount) < config.min_amount:
 
                     await conv.send_message(bot_text["small_amount"])
 
@@ -2508,23 +2485,21 @@ async def cart_pay(event):
 
                 await conv.send_message(bot_text["just_num"])
 
-        await conv.send_message(bot_text["name"])
-
-        name = await conv.get_response()
-
-        if name.media is not None:
-
-            await conv.send_message(bot_text["dont_image"])
-
-            return
-
-        if name.raw_text == bot_text["back"]:
-
-            return
+        # await conv.send_message(bot_text["name"])
+        #
+        # name = await conv.get_response()
+        #
+        # if name.media is not None:
+        #     await conv.send_message(bot_text["dont_image"])
+        #
+        #     return
+        #
+        # if name.raw_text == bot_text["back"]:
+        #     return
 
         phone = cur.execute(f"SELECT phone FROM users WHERE user_id = {user_id}").fetchone()[0]
 
-        await conv.send_message(bot_text["cart_pay_created"].format(amount=int(amount), cart=config.CART))
+        await conv.send_message(bot_text["cart_pay_created"].format(amount=int(amount) * 10, cart=config.CART))
 
         while True:
 
@@ -2539,19 +2514,18 @@ async def cart_pay(event):
             else:
 
                 if image.raw_text == bot_text["back"]:
-
                     return
 
                 await conv.send_message(bot_text["just_media"])
 
-        code = randint(1000, 9999)
+        code = randint(100000000, 999999999)
 
-        cur.execute(f"INSERT INTO pay VALUES ({user_id}, {amount}, '{name.raw_text}', {phone}, '{None}', {code}, 'cart', '{None}', 'wallet', {False}, '{path}')")
+        cur.execute(
+            f"INSERT INTO pay VALUES ({user_id}, {amount}, 'ثبت نشده', {phone}, '{None}', {code}, 'cart', '{None}', 'wallet', {False}, '{path}')")
 
         db.commit()
 
         for admin in config.ADMINS_LIST:
-
             find_pay = cur.execute(f"SELECT * FROM pay WHERE code = {code}").fetchone()
 
             phone = find_pay[3]
@@ -2623,21 +2597,27 @@ async def cart_pay(event):
                 Button.inline(bot_text["cart_not_conf"], str.encode("cart_not_conf:" + str(code))),
 
             ]
+            user_get = await bot.get_entity(user_id)
 
-            await bot.send_message(admin, bot_text["new_pay_cart"].format(user_id=user_id, name=desc, phone=phone, time=now_hms, date=time_s, code=code, amount=int(amount), pay_type=fa_pay_type[pay_type]), file=path, buttons=conf_keys)
+            user_full_name = user_get.first_name if user_get.last_name is None else user_get.first_name + user_get.last_name
+
+            username_ = "❌" if user_get.username is None else user_get.username
+
+            await bot.send_message(admin,
+                                   bot_text["new_pay_cart"].format(user_id=user_id, name=user_full_name, phone=phone,
+                                                                   amount=int(amount), username=username_), file=path,
+                                   buttons=conf_keys)
 
         await conv.send_message(bot_text["cart_send_admin"])
 
-@bot.on(events.CallbackQuery(data=b'back'))
 
-async def back_call(event):
-
+@bot.on(events.CallbackQuery(data=b'pay_zarinpal'))
+async def zarinpal_pay(event):
     user_id = event.sender_id
 
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -2645,7 +2625,234 @@ async def back_call(event):
     user = cur.execute(f"SELECT * FROM users WHERE user_id = {user_id}").fetchone()
 
     if user[2] is None:
+        keys = [
 
+            [
+
+                Button.request_phone(bot_text["phone_share"], resize=1)
+
+            ],
+
+            [
+
+                Button.text(bot_text["back"])
+
+            ]
+
+        ]
+
+        await event.reply(bot_text["select"], buttons=keys)
+
+        return
+
+    async with bot.conversation(user_id, timeout=1000) as conv:
+
+        # pay_type_keys = [
+
+        #     [Button.inline(bot_text["wallet"], b'wallet')],
+
+        #     [Button.inline(bot_text["direct"], b'direct')],
+
+        #     [Button.inline(bot_text["cancel"], b'cancel')]
+
+        # ]
+
+        # ask_pay = await conv.send_message(bot_text["ask_pay_type"], buttons=pay_type_keys)
+
+        # pay_type = await conv.wait_event(events.CallbackQuery())
+
+        # if pay_type.data == b'wallet':
+
+        #     pay_type = "wallet"
+
+        # elif pay_type.data == b'direct':
+
+        #     pay_type = "direct"
+
+        # elif pay_type.data == b'cancel':
+
+        #     await bot.delete_messages(user_id, ask_pay.id)
+
+        #     await event.reply(bot_text["canceled"])
+
+        #     return
+
+        # else:
+
+        #     await event.reply(bot_text["action_not_found"])
+
+        #     return
+
+        pay_type = "wallet"
+        name = None
+        await conv.send_message(bot_text["enter_amount"])
+
+        while True:
+
+            try:
+
+                amount = await conv.get_response()
+
+                amount = amount.raw_text
+
+                if amount == bot_text["back"]:
+                    await conv.cancel_all()
+
+                if int(amount) < config.min_amount:
+
+                    await conv.send_message(bot_text["small_amount"])
+
+                elif int(amount) > 5000000:
+
+                    await conv.send_message(bot_text["big_amount"])
+
+                else:
+
+                    break
+
+            except ValueError:
+
+                await conv.send_message(bot_text["just_num"])
+
+        # await conv.send_message(bot_text["name"])
+        #
+        # name = await conv.get_response()
+        #
+        # if name.media is not None:
+        #     await conv.send_message(bot_text["dont_image"])
+        #
+        #     return
+        #
+        # if name.raw_text == bot_text["back"]:
+        #     return
+
+        phone = cur.execute(f"SELECT phone FROM users WHERE user_id = {user_id}").fetchone()[0]
+        code = randint(100000000, 999999999)
+        await conv.send_message(
+            bot_text["zarinpal_pay_created"].format(amount=int(amount), link=config.zarinpal_link, code=code))
+
+        while True:
+
+            image = await conv.get_response()
+
+            if image.media is not None:
+
+                path = await image.download_media()
+
+                break
+
+            else:
+
+                if image.raw_text == bot_text["back"]:
+                    return
+
+                await conv.send_message(bot_text["just_media"])
+
+        cur.execute(
+            f"INSERT INTO pay VALUES ({user_id}, {amount}, 'ثبت نشده', {phone}, '{None}', {code}, 'zarinpal', '{None}', 'wallet', {False}, '{path}')")
+
+        db.commit()
+
+        for admin in config.ADMINS_LIST:
+            find_pay = cur.execute(f"SELECT * FROM pay WHERE code = {code}").fetchone()
+
+            phone = find_pay[3]
+
+            desc = find_pay[2]
+
+            pay_type = find_pay[8]
+
+            now = datetime.now()
+
+            iran_timezone = pytz.timezone('Asia/Tehran')
+
+            iran_time = now.astimezone(iran_timezone)
+
+            now_hms = iran_time.strftime("%H-%M-%S")
+
+            now_hms = str(now_hms).split("-")
+
+            now_hms = now_hms[0] + ":" + now_hms[1] + ":" + now_hms[2]
+
+            now_string_ = jdatetime.date.fromgregorian(day=iran_time.day, month=iran_time.month, year=iran_time.year)
+
+            now_string = str(now_string_).split("-")
+
+            year, month, day = now_string[0], now_string[1], now_string[2]
+
+            month_s = {
+
+                "01": "فروردین",
+
+                "02": "اردیبهشت",
+
+                "03": "خرداد",
+
+                "04": "تیر",
+
+                "05": "مرداد",
+
+                "06": "شهریور",
+
+                "07": "مهر",
+
+                "08": "آبان",
+
+                "09": "آذر",
+
+                "10": "دی",
+
+                "11": "بهمن",
+
+                "12": "اسفند"
+
+            }
+
+            time_s = f"{day} {month_s[month]} {year}"
+
+            fa_pay_type = {
+
+                "direct": bot_text["direct"],
+
+                "wallet": bot_text["wallet"]
+
+            }
+
+            conf_keys = [
+
+                Button.inline(bot_text["cart_conf"], str.encode("cart_conf:" + str(code))),
+
+                Button.inline(bot_text["cart_not_conf"], str.encode("cart_not_conf:" + str(code))),
+
+            ]
+            user_get = await bot.get_entity(user_id)
+
+            user_full_name = user_get.first_name if user_get.last_name is None else user_get.first_name + user_get.last_name
+
+            username_ = "❌" if user_get.username is None else user_get.username
+
+            await bot.send_message(admin,
+                                   bot_text["new_pay_cart"].format(user_id=user_id, name=user_full_name, phone=phone,
+                                                                   amount=int(amount), username=username_), file=path,
+                                   buttons=conf_keys)
+
+        await conv.send_message(bot_text["cart_send_admin"])
+
+
+@bot.on(events.CallbackQuery(data=b'back'))
+async def back_call(event):
+    user_id = event.sender_id
+
+    is_ban = config.is_ban(user_id)
+
+    if is_ban:
+        await event.reply(bot_text["you_banned"])
+
+        return
+
+    user = cur.execute(f"SELECT * FROM users WHERE user_id = {user_id}").fetchone()
+
+    if user[2] is None:
         keys = [
 
             [
@@ -2674,16 +2881,14 @@ async def back_call(event):
 
         await event.reply(bot_text["start"], buttons=home_keys)
 
+
 @bot.on(events.CallbackQuery(pattern="get_info:*"))
-
 async def get_info(event):
-
     user_id = event.sender_id
 
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -2693,7 +2898,6 @@ async def get_info(event):
     pay = cur.execute(f"SELECT * FROM pay WHERE code = {code}").fetchone()
 
     if pay is None:
-
         await bot.send_message(user_id, bot_text["pay_not_found"])
 
         return
@@ -2720,20 +2924,20 @@ async def get_info(event):
 
     }
 
-    full_text = bot_text["null_text"].format(pay_type=fa_pay_type[pay_type], amount=int(pay_amount), amount_two=int(pay_amount), name=pay_name, phone=pay_phone, date=pay_date, time=pay_time, code=code)
+    full_text = bot_text["null_text"].format(pay_type=fa_pay_type[pay_type], amount=int(pay_amount),
+                                             amount_two=int(pay_amount), name=pay_name, phone=pay_phone, date=pay_date,
+                                             time=pay_time, code=code)
 
     await event.reply(full_text)
 
+
 @bot.on(events.CallbackQuery(pattern="cart_not_conf:*"))
-
 async def cart_not_conf(event):
-
     user_id = event.sender_id
 
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -2743,11 +2947,9 @@ async def cart_not_conf(event):
     pay = cur.execute(f"SELECT * FROM pay WHERE code = {code}").fetchone()
 
     if pay is None:
-
         await bot.send_message(user_id, bot_text["pay_not_found"])
 
     if pay[9] is False:
-
         await bot.send_message(user_id, bot_text["before_not_conf"])
 
         return
@@ -2757,21 +2959,18 @@ async def cart_not_conf(event):
     db.commit()
 
     for admin in config.ADMINS_LIST:
-
         await bot.send_message(admin, bot_text["admin_not_conf"].format(code=code))
 
     await bot.send_message(pay[0], bot_text["user_not_conf"].format(code=code))
 
+
 @bot.on(events.CallbackQuery(data=b'one_member'))
-
 async def one_mem(event):
-
     user_id = event.sender_id
 
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -2779,21 +2978,18 @@ async def one_mem(event):
     buttons = []
 
     for key, value in config.one_member_names.items():
-
         buttons.append([Button.inline(value, data=str.encode("buy_service:" + str(key)))])
 
     await event.reply(bot_text["select"], buttons=buttons)
 
+
 @bot.on(events.CallbackQuery(data=b'two_member'))
-
 async def two_mem(event):
-
     user_id = event.sender_id
 
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -2801,21 +2997,18 @@ async def two_mem(event):
     buttons = []
 
     for key, value in config.two_member_names.items():
-
         buttons.append([Button.inline(value, data=str.encode("buy_service:" + str(key)))])
 
     await event.reply(bot_text["select"], buttons=buttons)
 
+
 @bot.on(events.CallbackQuery(data=b'three_member'))
-
 async def three_mem(event):
-
     user_id = event.sender_id
 
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -2823,22 +3016,18 @@ async def three_mem(event):
     buttons = []
 
     for key, value in config.three_member_names.items():
-
         buttons.append([Button.inline(value, data=str.encode("buy_service:" + str(key)))])
 
     await event.reply(bot_text["select"], buttons=buttons)
 
 
 @bot.on(events.CallbackQuery(data=b'iphone_one_member'))
-
 async def iphone_one_mem(event):
-
     user_id = event.sender_id
 
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -2846,21 +3035,18 @@ async def iphone_one_mem(event):
     buttons = []
 
     for key, value in config.one_member_namesـiphone.items():
-
         buttons.append([Button.inline(value, data=str.encode("iphone_buy_serv:" + str(key)))])
 
     await event.reply(bot_text["select"], buttons=buttons)
 
+
 @bot.on(events.CallbackQuery(data=b'iphone_two_member'))
-
 async def iphone_two_mem(event):
-
     user_id = event.sender_id
 
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -2868,21 +3054,18 @@ async def iphone_two_mem(event):
     buttons = []
 
     for key, value in config.two_member_names_iphone.items():
-
         buttons.append([Button.inline(value, data=str.encode("iphone_buy_serv:" + str(key)))])
 
     await event.reply(bot_text["select"], buttons=buttons)
 
+
 @bot.on(events.CallbackQuery(data=b'iphone_three_member'))
-
 async def iphone_three_mem(event):
-
     user_id = event.sender_id
 
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -2890,20 +3073,18 @@ async def iphone_three_mem(event):
     buttons = []
 
     for key, value in config.three_member_names_iphone.items():
-
         buttons.append([Button.inline(value, data=str.encode("iphone_buy_serv:" + str(key)))])
 
     await event.reply(bot_text["select"], buttons=buttons)
+
+
 @bot.on(events.CallbackQuery(pattern="buy_service:*"))
-
 async def buy_serv(event):
-
     user_id = event.sender_id
 
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -2912,22 +3093,7 @@ async def buy_serv(event):
 
     amount = config.amounts[service_num]
 
-    service_name = None
-
-    try:
-
-        service_name = config.one_member_names[service_num]
-
-    except KeyError:
-
-        try:
-
-            service_name = config.two_member_names[service_num]
-
-        except KeyError:
-
-            service_name = config.three_member_names[service_num]
-
+    service_name = config.plan_names[service_num]
     keys = [
 
         [
@@ -2943,59 +3109,59 @@ async def buy_serv(event):
         # ]
 
     ]
+    user_inventory = cur.execute(f"SELECT inventory FROM users WHERE user_id = {user_id}").fetchone()[0]
+    data_limit = config.data_limits[service_num]
+    days = config.expire_dates[service_num]
+    await event.reply(
+        bot_text["pay_replay"].format(amount=amount, service_name=service_name, inventory=user_inventory,
+                                      data_limit=data_limit, days=days),
+        buttons=keys)
 
-    await event.reply(bot_text["pay_replay"].format(amount=amount, service=service_name), buttons=keys)
 
-
-@bot.on(events.CallbackQuery(pattern="iphone_buy_serv:*"))
-
-async def buy_ipn(event):
-
-    user_id = event.sender_id
-
-    is_ban = config.is_ban(user_id)
-
-    if is_ban:
-
-        await event.reply(bot_text["you_banned"])
-
-        return
-    print(event.data.decode().split(":"))
-    service_num = int(event.data.decode().split(":")[1])
-
-    amount = config.iphone_amounts[service_num]
-    print(amount)
-    service_name = config.iphone_plan_names[service_num]
-
-    keys = [
-
-        [
-
-            Button.inline(bot_text["pay_and_active"], str.encode("iphone_buy_wallet:" + str(service_num)))
-
-        ],
-
-        # [
-
-        #     Button.inline(bot_text["pay"], str.encode("pay_service:" + str(service_num)))
-
-        # ]
-
-    ]
-
-    await event.reply(bot_text["pay_replay"].format(amount=amount, service=service_name), buttons=keys)
+# @bot.on(events.CallbackQuery(pattern="iphone_buy_serv:*"))
+# async def buy_ipn(event):
+#     user_id = event.sender_id
+#
+#     is_ban = config.is_ban(user_id)
+#
+#     if is_ban:
+#         await event.reply(bot_text["you_banned"])
+#
+#         return
+#     print(event.data.decode().split(":"))
+#     service_num = int(event.data.decode().split(":")[1])
+#
+#     amount = config.iphone_amounts[service_num]
+#     print(amount)
+#     service_name = config.iphone_plan_names[service_num]
+#
+#     keys = [
+#
+#         [
+#
+#             Button.inline(bot_text["pay_and_active"], str.encode("iphone_buy_wallet:" + str(service_num)))
+#
+#         ],
+#
+#         # [
+#
+#         #     Button.inline(bot_text["pay"], str.encode("pay_service:" + str(service_num)))
+#
+#         # ]
+#
+#     ]
+#     user_inventory = cur.execute(f"SELECT inventory FROM users WHERE user_id = {user_id}").fetchone()[0]
+#     await event.reply(bot_text["pay_replay"].format(amount=amount, service_name=service_name, inventory=user_inventory,
+#                                                     data_limit=data_limit, days=days), buttons=keys)
 
 
 @bot.on(events.CallbackQuery(pattern="pay_service:*"))
-
 async def pay_serv(event):
-
     user_id = event.sender_id
 
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -3020,20 +3186,16 @@ async def pay_serv(event):
 
             service_name = config.three_member_names[service_num]
 
+    await event.reply(bot_text["pay_link_replay"].format(amount=amount, service=service_name))
 
-
-    await event.reply(bot_text["pay_link_replay"].format(amount=amount, service=service_name))    
 
 @bot.on(events.CallbackQuery(pattern="buy_with_wallet:*"))
-
 async def buy_with_wallet(event):
-
     user_id = event.sender_id
 
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -3047,7 +3209,6 @@ async def buy_with_wallet(event):
     user_inventory = cur.execute(f"SELECT inventory FROM users WHERE user_id = {user_id}").fetchone()[0]
 
     if user_inventory - int(find_amount) < 0:
-
         await event.reply(bot_text["none_inventory"])
 
     else:
@@ -3060,35 +3221,17 @@ async def buy_with_wallet(event):
 
         ]
 
-        service_name = None
-
-        try:
-
-            service_name = config.one_member_names[service_num]
-
-        except KeyError:
-
-            try:
-
-                service_name = config.two_member_names[service_num]
-
-            except KeyError:
-
-                service_name = config.three_member_names[service_num]
-
+        service_name = config.plan_names[service_num]
         await event.reply(bot_text["pay_wallet_sure"].format(service=service_name), buttons=keys)
 
 
 @bot.on(events.CallbackQuery(pattern="iphone_buy_wallet:*"))
-
 async def iphone_buy_wallet(event):
-
     user_id = event.sender_id
 
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -3176,15 +3319,15 @@ async def iphone_yes(event):
 
         # شرط برای اضافه کردن روز
         condition = None
-        if "1 ماهه" in service_name:
+        if "یک ماهه" in service_name:
 
             condition = 'add_32_days'  # می‌توانید این مقدار را به 'add_64_days' یا 'add_99_days' تغییر دهید
 
-        elif "2 ماهه" in service_name:
+        elif "دو ماهه" in service_name:
 
             condition = 'add_64_days'
 
-        elif "3 ماهه" in service_name:
+        elif "سه ماهه" in service_name:
 
             condition = 'add_99_days'
 
@@ -3231,12 +3374,12 @@ async def iphone_yes(event):
             username_ = "❌" if user_get.username is None else user_get.username
 
             await bot.send_message(admin, bot_text["admin_service_notif_iphone"].format(service_name=service_name,
-                                                                                 user_inventory=user_inventory,
-                                                                                 user_phone=to,
-                                                                                 username=username_,
-                                                                                 user_name=user_full_name,
-                                                                                 user_id=user_id,
-                                                                                 sub_link=sub_link))
+                                                                                        user_inventory=user_inventory,
+                                                                                        user_phone=to,
+                                                                                        username=username_,
+                                                                                        user_name=user_full_name,
+                                                                                        user_id=user_id,
+                                                                                        sub_link=sub_link))
 
         full_text = f"""🔑 اشتراک شما با موفقیت ساخته شد.
 
@@ -3300,10 +3443,9 @@ async def iphone_yes(event):
 
         await event.reply(bot_text["cant_make_service"])
 
+
 @bot.on(events.CallbackQuery(pattern="wallet_yes:*"))
-
 async def yes_wallet(event):
-
     msg_id = event.original_update.msg_id
 
     user_id = event.sender_id
@@ -3311,7 +3453,6 @@ async def yes_wallet(event):
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -3346,27 +3487,10 @@ async def yes_wallet(event):
 
         random_num = randint(1000, 9999)
 
-        service_name = None
-
-        try:
-
-            service_name = config.one_member_names[service_num]
-
-        except KeyError:
-
-            try:
-
-                service_name = config.two_member_names[service_num]
-
-            except KeyError:
-
-                service_name = config.three_member_names[service_num]
-
+        service_name = config.plan_names[service_num]
         # متغیر شروع با زمان فعلی
 
         start_time = time.time()
-
-
 
         # تبدیل زمان به فرمت datetime
 
@@ -3376,15 +3500,15 @@ async def yes_wallet(event):
 
         # شرط برای اضافه کردن روز
 
-        if "1 ماهه" in service_name:
+        if "یک ماهه" in service_name:
 
             condition = 'add_32_days'  # می‌توانید این مقدار را به 'add_64_days' یا 'add_99_days' تغییر دهید
 
-        elif "2 ماهه" in service_name:
+        elif "دو ماهه" in service_name:
 
             condition = 'add_64_days'
 
-        elif "3 ماهه" in service_name:
+        elif "سه ماهه" in service_name:
 
             condition = 'add_99_days'
 
@@ -3408,57 +3532,53 @@ async def yes_wallet(event):
 
             new_datetime = start_datetime  # در صورت عدم تطابق، زمان اولیه را برمی‌گرداند
 
-
-
         # تبدیل زمان جدید به timestamp
 
         new_timestamp = new_datetime.timestamp()
-
-
 
         # نمایش زمان جدید به صورت timestamp
 
         # print("زمان جدید (timestamp):", new_timestamp)
 
-        cur.execute(f"INSERT INTO services VALUES ({user_id}, '{username}', '{password}', {service_num}, {random_num}, {start_time}, {new_timestamp}, {False})")
+        cur.execute(
+            f"INSERT INTO services VALUES ({user_id}, '{username}', '{password}', {service_num}, {random_num}, {start_time}, {new_timestamp}, {False})")
 
         db.commit()
 
         await bot.delete_messages(user_id, loading.id)
 
         for admin in config.ADMINS_LIST:
-
             user_get = await bot.get_entity(user_id)
 
             user_full_name = user_get.first_name if user_get.last_name is None else user_get.first_name + user_get.last_name
 
             username_ = "❌" if user_get.username is None else user_get.username
 
-            await bot.send_message(admin, bot_text["admin_service_notif"].format(service_name=service_name, user_inventory=user_inventory, user_phone=to, service_password=password, username=username_, user_name=user_full_name, user_id=user_id))
+            await bot.send_message(admin, bot_text["admin_service_notif"].format(service_name=service_name,
+                                                                                 user_inventory=user_inventory,
+                                                                                 user_phone=to,
+                                                                                 service_password=password,
+                                                                                 username=username_,
+                                                                                 user_name=user_full_name,
+                                                                                 user_id=user_id))
 
-        full_text = f"""🔑 اشتراک شما با موفقیت ساخته شد.
-          
-⚡️ اطلاعات حساب کاربری شما عبارت است از :
-    
-نام کاربری : {username} 
+        full_text = f"""✅ سرویس با موفقیت ایجاد شد
+🌿 نام سرویس:  {config.plan_names[service_num]}
+⏳ مدت زمان: {config.expire_dates[service_num]}  روز
+🗜 حجم سرویس:  {'نامحدود' if config.data_limits[service_num] == 500 else 20} گیگابایت
 
-رمز عبور : {password} 
-
-📌 مشخصات حساب کاربری شما نیز به قرار زیر است:"""
-        service_time = service_name.split("-")[1]
-        service_value = service_name.split("-")[0]
-        key = [
-            [Button.inline(service_time), Button.inline("زمان سرویس")],
-            [Button.inline(service_value), Button.inline("حجم سرویس")],
-            [Button.inline(bot_text["help_use"], b'help_use')]
-        ]
-        await event.reply(full_text, buttons=key)
+👤 نام کاربری سرویس : 
+<blockquote><code>{username}</code></blockquote>
+🔑رمز عبور: 
+<blockquote><code>{password}</blockquote></code>
+🧑‍🦯 شما میتوانید شیوه اتصال را  با فشردن دکمه زیر و انتخاب سیستم عامل خود را دریافت کنید"""
+        await event.reply(full_text, buttons=[Button.inline(bot_text["help_use"], b'help_use')], parse_mode="html")
 
         username_sms = config.sms_username
 
         password_sms = config.sms_password
 
-        api = Api(username_sms,password_sms)
+        api = Api(username_sms, password_sms)
 
         sms_soap = api.sms('soap')
 
@@ -3498,16 +3618,14 @@ async def yes_wallet(event):
 
         await event.reply(bot_text["cant_make_service"])
 
+
 @bot.on(events.CallbackQuery(pattern="gt_service:*"))
-
 async def serv_info_get(event):
-
     user_id = event.sender_id
 
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -3516,7 +3634,8 @@ async def serv_info_get(event):
 
     random_num = int(event.data.decode().split(":")[2])
 
-    service = cur.execute(f"SELECT * FROM services WHERE service_num = {service_num} AND random_num = {random_num}").fetchone()
+    service = cur.execute(
+        f"SELECT * FROM services WHERE service_num = {service_num} AND random_num = {random_num}").fetchone()
 
     username, password = service[1], service[2]
 
@@ -3541,8 +3660,7 @@ async def serv_info_get(event):
     await bot.delete_messages(user_id, r.id)
     response = response.json()
     is_active = None
-    print(response["info"]['active'])
-    if response["info"]['active'] == 'deactive':
+    if response["info"]['is_active'] == 0:
         is_active = "غیر فعال"
     else:
         is_active = "فعال"
@@ -3563,12 +3681,14 @@ async def serv_info_get(event):
         # [
         #     Button.inline(bot_text["change_service_to_iphone"], str.encode("change_service_to_iphone:" + str(username) + ":" + str(service_num)))
         # ]
-        # [
-        #     Button.inline(bot_text["sub_link"], str.encode("sr_vl:" + str(username))),
-        #     Button.inline(bot_text["outline"], str.encode("sr_ot:" + str(username)))
-        # ],
+        [
+            Button.inline(bot_text["sub_link"], str.encode("sr_vl:" + str(username))),
+            Button.inline(bot_text["outline"], str.encode("sr_ot:" + str(username)))
+        ],
     ]
     await event.reply(full_text, buttons=keys)
+
+
 # @bot.on(events.CallbackQuery(pattern="change_service_to_iphone:*"))
 # async def change_service_to_iphone(event):
 #     user_id = event.sender_id
@@ -3593,15 +3713,15 @@ async def serv_info_get(event):
 #
 #     # شرط برای اضافه کردن روز
 #
-#     if "1 ماهه" in service_name:
+#     if "یک ماهه" in service_name:
 #
 #         condition = 'add_32_days'  # می‌توانید این مقدار را به 'add_64_days' یا 'add_99_days' تغییر دهید
 #
-#     elif "2 ماهه" in service_name:
+#     elif "دو ماهه" in service_name:
 #
 #         condition = 'add_64_days'
 #
-#     elif "3 ماهه" in service_name:
+#     elif "سه ماهه" in service_name:
 #
 #         condition = 'add_99_days'
 #
@@ -3643,15 +3763,12 @@ async def serv_info_get(event):
 # """
 #     await event.reply(text)
 @bot.on(events.CallbackQuery(pattern="iphone_gt_service:*"))
-
 async def iphone_gt_service(event):
-
     user_id = event.sender_id
 
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -3692,16 +3809,14 @@ async def iphone_gt_service(event):
     ]
     await event.reply(full_text, buttons=keys)
 
+
 @bot.on(events.CallbackQuery(data=b'android_help'))
-
 async def android_help(event):
-
     user_id = event.sender_id
 
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -3712,16 +3827,14 @@ async def android_help(event):
 
     await bot.send_file(user_id, file=android_video_path)
 
+
 @bot.on(events.CallbackQuery(data=b'windows_help'))
-
 async def win_help(event):
-
     user_id = event.sender_id
 
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -3732,16 +3845,14 @@ async def win_help(event):
 
     await bot.send_file(user_id, file=windows_video_path)
 
+
 @bot.on(events.CallbackQuery(data=b'mac_help'))
-
 async def win_help(event):
-
     user_id = event.sender_id
 
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -3752,16 +3863,14 @@ async def win_help(event):
 
     await bot.send_file(user_id, file=mac_video_path)
 
+
 @bot.on(events.CallbackQuery(data=b'ios_help'))
-
 async def win_help(event):
-
     user_id = event.sender_id
 
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -3772,58 +3881,51 @@ async def win_help(event):
 
     await bot.send_file(user_id, file=ios_video_path)
 
+
 @bot.on(events.CallbackQuery(data=b'down_android'))
-
 async def android_down(event):
-
     user_id = event.sender_id
 
     await bot.send_message(user_id, bot_text["down_android"])
 
+
 @bot.on(events.CallbackQuery(data=b'down_windows'))
-
 async def win_down(event):
-
     user_id = event.sender_id
 
     await bot.send_message(user_id, bot_text["down_windows"])
 
+
 @bot.on(events.CallbackQuery(data=b'down_mac'))
-
 async def mac_down(event):
-
     user_id = event.sender_id
 
     await bot.send_message(user_id, bot_text["down_mac"])
 
+
 @bot.on(events.CallbackQuery(data=b'down_ios'))
-
 async def ios_down(event):
-
     user_id = event.sender_id
 
     await bot.send_message(user_id, bot_text["down_ios"])
 
+
 @bot.on(events.CallbackQuery(data=b'soon'))
-
 async def soon(event):
-
     user_id = event.sender_id
 
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
 
     await bot.send_message(user_id, bot_text["soon"])
 
+
 @bot.on(events.CallbackQuery(pattern="user_services:*"))
-
 async def user_services(event):
-
     admin_user_id = event.sender_id
 
     if admin_user_id in config.ADMINS_LIST:
@@ -3833,7 +3935,6 @@ async def user_services(event):
         history = cur.execute(f"SELECT * FROM services WHERE user_id = {user_id}").fetchall()
 
         if len(history) == 0:
-
             await event.reply(bot_text["user_dont_service"])
 
             return
@@ -3841,12 +3942,11 @@ async def user_services(event):
         keys = []
 
         for service in history:
-
             serv_code = service[3]
 
             random_num = service[4]
 
-            service_name = service[1]        
+            service_name = service[1]
 
             key = [
 
@@ -3858,10 +3958,9 @@ async def user_services(event):
 
         await event.reply(bot_text["select"], buttons=keys)
 
+
 @bot.on(events.CallbackQuery(pattern="sh_admin_serv:*"))
-
 async def sh_admin_serv_func(event):
-
     user_id = event.sender_id
 
     if user_id in config.ADMINS_LIST:
@@ -3869,7 +3968,6 @@ async def sh_admin_serv_func(event):
         is_ban = config.is_ban(user_id)
 
         if is_ban:
-
             await event.reply(bot_text["you_banned"])
 
             return
@@ -3878,7 +3976,8 @@ async def sh_admin_serv_func(event):
 
         random_num = int(event.data.decode().split(":")[2])
 
-        service = cur.execute(f"SELECT * FROM services WHERE service_num = {service_num} AND random_num = {random_num}").fetchone()
+        service = cur.execute(
+            f"SELECT * FROM services WHERE service_num = {service_num} AND random_num = {random_num}").fetchone()
 
         username, password = service[1], service[2]
 
@@ -3915,7 +4014,9 @@ async def sh_admin_serv_func(event):
         نوع سرویس: {service_name}"""
 
         await event.reply(full_text)
-@bot.on(events.CallbackQuery(data=b'serv_new'))
+
+
+@bot.on(events.NewMessage(pattern=f"(?i){bot_text['new_service']}"))
 async def ssn(event):
     user_id = event.sender_id
     members_key = [
@@ -3941,6 +4042,8 @@ async def ssn(event):
     ]
 
     await bot.send_message(user_id, bot_text["select"], buttons=members_key)
+
+
 @bot.on(events.CallbackQuery(data=b'buy_iphone_account'))
 async def bia(event):
     user_id = event.sender_id
@@ -3948,7 +4051,6 @@ async def bia(event):
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -3977,72 +4079,117 @@ async def bia(event):
 
     await bot.send_message(user_id, bot_text["select"], buttons=members_key)
 
+
+# @bot.on(events.NewMessage(pattern=f"(?i){bot_text['service_extension']}"))
+# async def sr_extension(event):
+#     user_id = event.sender_id
+#     history = cur.execute(f"SELECT * FROM services WHERE user_id = {user_id}").fetchall()
+#
+#     if len(history) == 0:
+#         key = Button.inline(bot_text["go_buy"], b'new_service_go')
+#
+#         await event.reply(bot_text["not_service"], buttons=key)
+#
+#         return
+#     keys = [
+#         [Button.inline(bot_text["vip_extension"], b'vip_extension')],
+#         [Button.inline(bot_text["iphone_extension"], b'iphone_extension')]
+#     ]
+#     await event.reply(bot_text["select"], buttons=keys)
+#
+
 @bot.on(events.NewMessage(pattern=f"(?i){bot_text['service_extension']}"))
-async def sr_extension(event):
-    user_id = event.sender_id
-    history = cur.execute(f"SELECT * FROM services WHERE user_id = {user_id}").fetchall()
-
-    if len(history) == 0:
-
-        key = Button.inline(bot_text["go_buy"], b'new_service_go')
-
-        await event.reply(bot_text["not_service"], buttons=key)
-
-        return
-    keys = [
-        [Button.inline(bot_text["vip_extension"], b'vip_extension')],
-        [Button.inline(bot_text["iphone_extension"], b'iphone_extension')]
-    ]
-    await event.reply(bot_text["select"], buttons=keys)
-
-@bot.on(events.CallbackQuery(data=b'vip_extension'))
 async def vip_extension(event):
     user_id = event.sender_id
     async with bot.conversation(user_id, timeout=1000) as conv:
-        await conv.send_message(bot_text["enter_service_username"], buttons=back)
-        username = await conv.get_response()
-        if username.raw_text is None or username.raw_text == bot_text["back"]:
+        services = []
+        user_services = cur.execute(f"SELECT * FROM services WHERE user_id = {user_id}").fetchall()
+        if len(user_services) == 0:
+            key = Button.inline(bot_text["go_buy"], b'new_service_go')
+
+            await event.reply(bot_text["not_service"], buttons=key)
+            return
+        for service in user_services:
+            service_key = [
+                Button.inline(service[1], str.encode(service[1]))
+            ]
+            services.append(service_key)
+        services.append([Button.inline(bot_text["cancel"], b'cancel')])
+        await conv.send_message(bot_text["select_service_extension"], buttons=services)
+        select = await conv.wait_event(events.CallbackQuery())
+        select = select.data
+        if select == b'cancel':
+            await conv.send_message(bot_text["canceled"])
+            return
+        service_username = select.decode()
+        find_service = cur.execute(
+            f"SELECT * FROM services WHERE username = '{service_username}'").fetchone()
+        if find_service is None:
+            await conv.send_message(bot_text["service_not_found"])
             return
         else:
-            username = username.raw_text
-            url = f"{config.API_ADDRESS}client-info?username={username}"
-            response = requests.get(url)
-            print(response)
-            if response.status_code != 200:
-                await conv.send_message(bot_text["service_not_found"])
-                return
-            else:
-                response = response.json()
-                service_username = response["info"]["username"]
-                if service_username != username:
-                    await conv.send_message(bot_text["service_not_found"])
-                    return
-                else:
-                    service_password = response["info"]["password"]
-                    await conv.send_message(bot_text["enter_service_password"], buttons=back)
-                    password = await conv.get_response()
-                    if service_password != password.raw_text:
-                        await conv.send_message(bot_text["password_invalid"])
-                        return
-                    else:
-                        find_service = cur.execute(f"SELECT * FROM services WHERE username = '{service_username}'").fetchone()
-                        if find_service is None:
-                            await conv.send_message(bot_text["service_not_found"])
-                            return
-                        else:
-                            serv_code = find_service[3]
+            serv_code = find_service[3]
 
-                            random_num = find_service[4]
+            random_num = find_service[4]
 
-                            service_name = find_service[1]
+            service_name = find_service[1]
 
-                            key = [
+            key = [
 
-                                Button.inline(str(service_name), str.encode("ex_service:" + str(serv_code) + ":" + str(random_num)))
+                Button.inline(str(service_name),
+                              str.encode("ex_service:" + str(serv_code) + ":" + str(random_num)))
 
-                            ]
+            ]
 
-                            await event.reply(bot_text["select"], buttons=key)
+            await event.reply(bot_text["select"], buttons=key)
+        # await conv.send_message(bot_text["enter_service_username"], buttons=back)
+        # username = await conv.get_response()
+        # if username.raw_text is None or username.raw_text == bot_text["back"]:
+        #     return
+        # else:
+        #     username = username.raw_text
+        #     url = f"{config.API_ADDRESS}client-info?username={username}"
+        #     response = requests.get(url)
+        #     print(response)
+        #     if response.status_code != 200:
+        #         await conv.send_message(bot_text["service_not_found"])
+        #         return
+        #     else:
+        #         response = response.json()
+        #         service_username = response["info"]["username"]
+        #         if service_username != username:
+        #             await conv.send_message(bot_text["service_not_found"])
+        #             return
+        #         else:
+        #             service_password = response["info"]["password"]
+        #             await conv.send_message(bot_text["enter_service_password"], buttons=back)
+        #             password = await conv.get_response()
+        #             if service_password != password.raw_text:
+        #                 await conv.send_message(bot_text["password_invalid"])
+        #                 return
+        #             else:
+        #                 find_service = cur.execute(
+        #                     f"SELECT * FROM services WHERE username = '{service_username}'").fetchone()
+        #                 if find_service is None:
+        #                     await conv.send_message(bot_text["service_not_found"])
+        #                     return
+        #                 else:
+        #                     serv_code = find_service[3]
+        #
+        #                     random_num = find_service[4]
+        #
+        #                     service_name = find_service[1]
+        #
+        #                     key = [
+        #
+        #                         Button.inline(str(service_name),
+        #                                       str.encode("ex_service:" + str(serv_code) + ":" + str(random_num)))
+        #
+        #                     ]
+        #
+        #                     await event.reply(bot_text["select"], buttons=key)
+
+
 @bot.on(events.CallbackQuery(data=b'iphone_extension'))
 async def iphone_extension(event):
     user_id = event.sender_id
@@ -4065,10 +4212,13 @@ async def iphone_extension(event):
                 service_name = config.iphone_plan_names[int(serv_code)]
                 key = [
 
-                    Button.inline(str(service_name), str.encode("iphone_ex_service:" + str(serv_code) + ":" + str(random_num)))
+                    Button.inline(str(service_name),
+                                  str.encode("iphone_ex_service:" + str(serv_code) + ":" + str(random_num)))
 
                 ]
                 await event.reply(bot_text["select"], buttons=key)
+
+
 @bot.on(events.CallbackQuery(pattern="ex_service:*"))
 async def ex_service(event):
     user_id = event.sender_id
@@ -4085,29 +4235,31 @@ async def ex_service(event):
             client_id = find_service[0]
             members_key = [
 
-            [
+                [
 
-                Button.inline(bot_text["one_member"], str.encode("one_ex_service:" + str(client_id))),
+                    Button.inline(bot_text["one_member"], str.encode("one_ex_service:" + str(client_id))),
 
-            ],
+                ],
 
-            [
+                [
 
-                Button.inline(bot_text["two_member"], str.encode("two_ex_service:" + str(client_id))),
+                    Button.inline(bot_text["two_member"], str.encode("two_ex_service:" + str(client_id))),
 
-            ],
+                ],
 
-            [
+                [
 
-                Button.inline(bot_text["three_member"], str.encode("three_ex_service:" + str(client_id))),
+                    Button.inline(bot_text["three_member"], str.encode("three_ex_service:" + str(client_id))),
+
+                ]
 
             ]
-
-        ]
 
             await bot.send_message(user_id, bot_text["select_ex_plan"], buttons=members_key)
         else:
             await event.reply(bot_text["cant_request_info"])
+
+
 @bot.on(events.CallbackQuery(pattern="iphone_ex_service:*"))
 async def iphone_ex_service(event):
     user_id = event.sender_id
@@ -4140,6 +4292,8 @@ async def iphone_ex_service(event):
         ]
 
         await bot.send_message(user_id, bot_text["select_ex_plan"], buttons=members_key)
+
+
 @bot.on(events.CallbackQuery(pattern="one_ex_service:*"))
 async def one_ex_service(event):
     user_id = event.sender_id
@@ -4147,7 +4301,6 @@ async def one_ex_service(event):
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -4155,10 +4308,11 @@ async def one_ex_service(event):
     buttons = []
 
     for key, value in config.one_member_names.items():
-
         buttons.append([Button.inline(value, data=str.encode("plan_ex_service:" + str(key) + ":" + str(username)))])
 
     await event.reply(bot_text["select"], buttons=buttons)
+
+
 @bot.on(events.CallbackQuery(pattern="iphone_one_ex_service:*"))
 async def iphone_one_ex_service(event):
     user_id = event.sender_id
@@ -4166,7 +4320,6 @@ async def iphone_one_ex_service(event):
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -4174,10 +4327,12 @@ async def iphone_one_ex_service(event):
     buttons = []
 
     for key, value in config.one_member_namesـiphone.items():
-
-        buttons.append([Button.inline(value, data=str.encode("iphone_plan_ex_service:" + str(key) + ":" + str(username)))])
+        buttons.append(
+            [Button.inline(value, data=str.encode("iphone_plan_ex_service:" + str(key) + ":" + str(username)))])
 
     await event.reply(bot_text["select"], buttons=buttons)
+
+
 @bot.on(events.CallbackQuery(pattern="two_ex_service:*"))
 async def two_ex_service(event):
     user_id = event.sender_id
@@ -4185,7 +4340,6 @@ async def two_ex_service(event):
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -4193,10 +4347,11 @@ async def two_ex_service(event):
     buttons = []
 
     for key, value in config.two_member_names.items():
-
         buttons.append([Button.inline(value, data=str.encode("plan_ex_service:" + str(key) + ":" + str(username)))])
 
     await event.reply(bot_text["select"], buttons=buttons)
+
+
 @bot.on(events.CallbackQuery(pattern="iphone_two_ex_service:*"))
 async def iphone_two_ex_service(event):
     user_id = event.sender_id
@@ -4204,7 +4359,6 @@ async def iphone_two_ex_service(event):
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -4212,10 +4366,12 @@ async def iphone_two_ex_service(event):
     buttons = []
 
     for key, value in config.two_member_names_iphone.items():
-
-        buttons.append([Button.inline(value, data=str.encode("iphone_plan_ex_service:" + str(key) + ":" + str(username)))])
+        buttons.append(
+            [Button.inline(value, data=str.encode("iphone_plan_ex_service:" + str(key) + ":" + str(username)))])
 
     await event.reply(bot_text["select"], buttons=buttons)
+
+
 @bot.on(events.CallbackQuery(pattern="three_ex_service:*"))
 async def three_ex_service(event):
     user_id = event.sender_id
@@ -4223,7 +4379,6 @@ async def three_ex_service(event):
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -4231,10 +4386,11 @@ async def three_ex_service(event):
     buttons = []
 
     for key, value in config.three_member_names.items():
-
         buttons.append([Button.inline(value, data=str.encode("plan_ex_service:" + str(key) + ":" + str(username)))])
 
     await event.reply(bot_text["select"], buttons=buttons)
+
+
 @bot.on(events.CallbackQuery(pattern="iphone_three_ex_service:*"))
 async def iphone_three_ex_service(event):
     user_id = event.sender_id
@@ -4242,7 +4398,6 @@ async def iphone_three_ex_service(event):
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -4250,10 +4405,12 @@ async def iphone_three_ex_service(event):
     buttons = []
 
     for key, value in config.three_member_names_iphone.items():
-
-        buttons.append([Button.inline(value, data=str.encode("iphone_plan_ex_service:" + str(key) + ":" + str(username)))])
+        buttons.append(
+            [Button.inline(value, data=str.encode("iphone_plan_ex_service:" + str(key) + ":" + str(username)))])
 
     await event.reply(bot_text["select"], buttons=buttons)
+
+
 @bot.on(events.CallbackQuery(pattern="plan_ex_service:*"))
 async def plan_ex_service(event):
     user_id = event.sender_id
@@ -4265,8 +4422,7 @@ async def plan_ex_service(event):
 
     try:
 
-        service_name = config.one_member_names[service_num]
-
+        service_name = config.plan_names[service_num]
     except KeyError:
 
         try:
@@ -4281,7 +4437,8 @@ async def plan_ex_service(event):
 
         [
 
-            Button.inline(bot_text["pay_and_active_ex"], str.encode("buy_ex_wallet:" + str(service_num) + ":" + str(username)))
+            Button.inline(bot_text["pay_and_active_ex"],
+                          str.encode("buy_ex_wallet:" + str(service_num) + ":" + str(username)))
 
         ],
 
@@ -4294,6 +4451,8 @@ async def plan_ex_service(event):
     ]
 
     await event.reply(bot_text["pay_replay_ex"].format(amount=amount, service=service_name), buttons=keys)
+
+
 @bot.on(events.CallbackQuery(pattern="iphone_plan_ex_service:*"))
 async def iphone_plan_ex_service(event):
     user_id = event.sender_id
@@ -4321,7 +4480,8 @@ async def iphone_plan_ex_service(event):
 
         [
 
-            Button.inline(bot_text["pay_and_active_ex"], str.encode("iphone_buy_ex_wallet:" + str(service_num) + ":" + str(username)))
+            Button.inline(bot_text["pay_and_active_ex"],
+                          str.encode("iphone_buy_ex_wallet:" + str(service_num) + ":" + str(username)))
 
         ],
 
@@ -4334,6 +4494,8 @@ async def iphone_plan_ex_service(event):
     ]
 
     await event.reply(bot_text["pay_replay_ex"].format(amount=amount, service=service_name), buttons=keys)
+
+
 @bot.on(events.CallbackQuery(pattern="buy_ex_wallet:*"))
 async def buy_ex_wallet(event):
     user_id = event.sender_id
@@ -4341,7 +4503,6 @@ async def buy_ex_wallet(event):
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -4373,7 +4534,7 @@ async def buy_ex_wallet(event):
 
         try:
 
-            service_name = config.one_member_names[service_num]
+            service_name = config.plan_names[service_num]
 
         except KeyError:
 
@@ -4386,6 +4547,8 @@ async def buy_ex_wallet(event):
                 service_name = config.three_member_names[service_num]
 
         await event.reply(bot_text["pay_wallet_sure"].format(service=service_name), buttons=keys)
+
+
 @bot.on(events.CallbackQuery(pattern="iphone_buy_ex_wallet:*"))
 async def iphone_buy_ex_wallet(event):
     user_id = event.sender_id
@@ -4393,7 +4556,6 @@ async def iphone_buy_ex_wallet(event):
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -4415,7 +4577,8 @@ async def iphone_buy_ex_wallet(event):
 
         keys = [
 
-            Button.inline(bot_text["yes"], str.encode("iphone_wallet_ex_yes:" + str(service_num) + ":" + str(username))),
+            Button.inline(bot_text["yes"],
+                          str.encode("iphone_wallet_ex_yes:" + str(service_num) + ":" + str(username))),
 
             Button.inline(bot_text["no"], b'wallet_no'),
 
@@ -4438,6 +4601,8 @@ async def iphone_buy_ex_wallet(event):
                 service_name = config.three_member_names_iphone[service_num]
 
         await event.reply(bot_text["pay_wallet_sure"].format(service=service_name), buttons=keys)
+
+
 @bot.on(events.CallbackQuery(pattern="wallet_ex_yes:"))
 async def wallet_ex_yes(event):
     msg_id = event.original_update.msg_id
@@ -4447,7 +4612,6 @@ async def wallet_ex_yes(event):
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -4474,7 +4638,6 @@ async def wallet_ex_yes(event):
 
     response = requests.get(url=url)
 
-
     if response.status_code == 200:
         await event.reply(bot_text["ss_ex"])
     else:
@@ -4488,6 +4651,8 @@ async def wallet_ex_yes(event):
         db.commit()
 
         await event.reply(bot_text["cant_make_service"])
+
+
 @bot.on(events.CallbackQuery(pattern="iphone_wallet_ex_yes:"))
 async def iphone_wallet_ex_yes(event):
     msg_id = event.original_update.msg_id
@@ -4497,7 +4662,6 @@ async def iphone_wallet_ex_yes(event):
     is_ban = config.is_ban(user_id)
 
     if is_ban:
-
         await event.reply(bot_text["you_banned"])
 
         return
@@ -4534,6 +4698,8 @@ async def iphone_wallet_ex_yes(event):
         db.commit()
 
         await event.reply(bot_text["cant_make_service"])
+
+
 @bot.on(events.CallbackQuery(pattern="sr_vl:"))
 async def sr_vl(event):
     username = event.data.decode().split(":")[1]
@@ -4554,6 +4720,8 @@ async def sr_vl(event):
 
 """
     await event.reply(text)
+
+
 @bot.on(events.CallbackQuery(pattern="sr_ot:"))
 async def sr_ot(event):
     username = event.data.decode().split(":")[1]
@@ -4573,6 +4741,8 @@ async def sr_ot(event):
 `{sub_link}`
 """
     await event.reply(text)
+
+
 @bot.on(events.CallbackQuery(pattern="sr_inf:"))
 async def sr_inf(event):
     username = event.data.decode().split(":")[1]
@@ -4583,17 +4753,11 @@ async def sr_inf(event):
     # year, month, day = int(split_time[0]), int(split_time[1]), int(split_time[2])
     # miladi_date = jdatetime.datetime(year, month, day).date()
     # shamsi_date = jdatetime.date.fromgregorian(date=miladi_date).__str__()
-    days = functions.calculate_date_difference(response["info"]["date_buy"], response["info"]["day"])
+    days = response["remains_days"]
     keys = [
         [Button.inline("زمان باقیمانده"), Button.inline(f" روز{days}")],
         [
-            Button.inline("حجم کل"), Button.inline(f'{response["info"]["total"]}G')
-        ],
-        [
-            Button.inline("حجم مصرفی"), Button.inline(f'{response["info"]["size"]}M')
-        ],
-        [
-            Button.inline("حجم باقیمانده"), Button.inline(f'{response["info"]["full"]}G')
+            Button.inline("حجم استفاده شده"), Button.inline(f'{response["used_traffic"]}G')
         ],
         [
             Button.inline(bot_text["help_use"], b'help_use')
@@ -4634,6 +4798,7 @@ async def iphone_sr_inf(event):
 
     """
     await event.reply(text, buttons=keys)
+
 
 # @bot.on(events.CallbackQuery(pattern="sr_inf:"))
 # async def sr_inf(event):
@@ -4688,14 +4853,39 @@ async def iphone_sr_pep(event):
             ]
             keys.append(key)
         await event.reply(text, buttons=keys)
+
+
 @bot.on(events.CallbackQuery(data=b'download_site'))
 async def download_site(event):
     await event.reply(bot_text["download_site_select"])
+
+
 @bot.on(events.CallbackQuery(data=b'download_channel'))
 async def download_site(event):
     await event.reply(bot_text["download_channel_select"])
+
+
 @bot.on(events.CallbackQuery(data=b'help_use'))
 async def help_use(event):
     await event.reply(bot_text["help_use_text"])
-bot.run_until_disconnected()
 
+
+@bot.on(events.CallbackQuery(data=b'up_inventory'))
+async def up_inventory(event):
+    buttons = [
+        [
+
+            Button.inline(bot_text["pay_link_cart"], b'cart_pay')
+
+        ],
+
+        [
+
+            Button.inline(bot_text["pay_link_zibal"], b'pay_zarinpal')
+
+        ],
+    ]
+    await event.reply(bot_text["select_pay_type"], buttons=buttons)
+
+
+bot.run_until_disconnected()
