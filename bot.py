@@ -3667,7 +3667,7 @@ async def serv_info_get(event):
     keys = [
         [
             # Button.inline(bot_text["service_info"], str.encode("sr_inf:" + str(username))),
-            Button.inline(bot_text["connected_pep"], str.encode("sr_pep:" + str(username)))
+            Button.inline(bot_text["connected_pep_"], str.encode("sr_pep:" + str(username)))
         ],
         # [
         #     Button.inline(bot_text["change_service_to_iphone"], str.encode("change_service_to_iphone:" + str(username) + ":" + str(service_num)))

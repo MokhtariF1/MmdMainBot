@@ -384,7 +384,7 @@ https://testflight.apple.com/join/FQkEGDfX
     "enter_service_password": "پسورد سرویس را وارد کنید:",
     "password_invalid": "پسورد سرویس اشتباه است!",
     "service_info": "📊مشخصات سرویس",
-    "connected_pep": "🧬افراد متصل",
+    "connected_pep_": "🧬افراد متصل",
     "sub_link": "📍دریافت لینک ساب v2ray",
     "outline": "🧨دریافت خروجی اوتلاین",
     "pay_war": """
