@@ -39,7 +39,7 @@ else:
     lock_bot = 0  # 0
     BOT_ID = "https://t.me/test_ro_bo_t_bot"
     CHANNEL_ID = "https://t.me/hoooosseinbot"
-    API_ADDRESS = f"http://127.0.0.1:8000/"
+    API_ADDRESS = f"http://127.0.0.1:8001/"
     panel_api_address = "https://app-panelmyqp.ir/get.php"
     MARZBAN_API_URL = f"https://panel.panelmarzban.com/api/"
     min_amount = 50000
