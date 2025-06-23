@@ -1300,18 +1300,18 @@ async def message(event):
 
         await event.reply(bot_text["select"], buttons=keys)
 
+    # elif text == bot_text["my_services"]:
+    #     keys = [
+    #         [
+    #             Button.text(bot_text["vip_info"])
+    #         ],
+    #         [
+    #             Button.text(bot_text["iphone_info"])
+    #         ],
+    #         [back]
+    #     ]
+    #     await event.reply(bot_text["select"], buttons=keys)
     elif text == bot_text["my_services"]:
-        keys = [
-            [
-                Button.text(bot_text["vip_info"])
-            ],
-            [
-                Button.text(bot_text["iphone_info"])
-            ],
-            [back]
-        ]
-        await event.reply(bot_text["select"], buttons=keys)
-    elif text == bot_text["vip_info"]:
         history = cur.execute(f"SELECT * FROM services WHERE user_id = {user_id}").fetchall()
 
         if len(history) == 0:
@@ -4754,11 +4754,11 @@ async def sr_inf(event):
     # year, month, day = int(split_time[0]), int(split_time[1]), int(split_time[2])
     # miladi_date = jdatetime.datetime(year, month, day).date()
     # shamsi_date = jdatetime.date.fromgregorian(date=miladi_date).__str__()
-    days = response["remains_days"]
+    days = response["info"]["remains_days"]
     keys = [
         [Button.inline("زمان باقیمانده"), Button.inline(f" روز{days}")],
         [
-            Button.inline("حجم استفاده شده"), Button.inline(f'{response["used_traffic"]}G')
+            Button.inline("حجم استفاده شده"), Button.inline(f'{response["info"]["used_traffic"]}G')
         ],
         [
             Button.inline(bot_text["help_use"], b'help_use')
