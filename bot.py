@@ -3677,7 +3677,7 @@ async def serv_info_get(event):
         #     Button.inline(bot_text["outline"], str.encode("sr_ot:" + str(username)))
         # ],
     ]
-    await event.reply(full_text, buttons=keys)
+    await event.reply(full_text, buttons=keys, parse_mode="html")
 
 
 @bot.on(events.CallbackQuery(pattern="sr_pep:*"))
