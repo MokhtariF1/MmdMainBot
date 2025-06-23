@@ -4232,7 +4232,8 @@ async def ex_service(event):
         response = requests.get(info_url)
         if response.status_code == 200:
             response = response.json()
-            client_id = find_service[0]
+            # client_id = find_service[0]
+            client_id = response["info"]["id"]
             members_key = [
 
                 [
