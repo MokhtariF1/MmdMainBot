@@ -3638,22 +3638,7 @@ async def serv_info_get(event):
         f"SELECT * FROM services WHERE service_num = {service_num} AND random_num = {random_num}").fetchone()
 
     username, password = service[1], service[2]
-
-    service_name = None
-
-    try:
-
-        service_name = config.one_member_names[service_num]
-
-    except KeyError:
-
-        try:
-
-            service_name = config.two_member_names[service_num]
-
-        except KeyError:
-
-            service_name = config.three_member_names[service_num]
+    service_name = config.plan_names[service_num]
     url = f"{config.API_ADDRESS}client-info?username={username}"
     r = await event.reply("درحال دریافت اطلاعات...")
     response = requests.get(url)
@@ -3661,34 +3646,81 @@ async def serv_info_get(event):
     response = response.json()
     is_active = None
     if response["info"]['is_active'] == 0:
-        is_active = "غیر فعال"
+        is_active = "❌ غیر فعال"
     else:
-        is_active = "فعال"
+        is_active = "✅ فعال"
+    data_limit = config.data_limits[service_num]
+    used_traffic = response["info"]["used_traffic"]
     full_text = f"""
-🌿 نام سرویس: {service_name}
+وضعیت سرویس : {status}
 
-وضعیت: {is_active}
+🗂 نام محصول :{service_name}
 
+🔋 حجم سرویس : {data_limit}
+📥 حجم مصرفی : {used_traffic}G
 
-📌 شما میتوانید با استفاده از دکمه های زیر سرویس خود را مدیریت کنید
-
+👤 نام کاربری سرویس : 
+<blockquote><code>{username}</code></blockquote>
+🔑رمز عبور: 
+<blockquote><code>{password}</blockquote></code>
 🆔 @SpeedConnectbot"""
     keys = [
         [
-            Button.inline(bot_text["service_info"], str.encode("sr_inf:" + str(username))),
+            # Button.inline(bot_text["service_info"], str.encode("sr_inf:" + str(username))),
             Button.inline(bot_text["connected_pep"], str.encode("sr_pep:" + str(username)))
         ],
         # [
         #     Button.inline(bot_text["change_service_to_iphone"], str.encode("change_service_to_iphone:" + str(username) + ":" + str(service_num)))
         # ]
-        [
-            Button.inline(bot_text["sub_link"], str.encode("sr_vl:" + str(username))),
-            Button.inline(bot_text["outline"], str.encode("sr_ot:" + str(username)))
-        ],
+        # [
+        #     Button.inline(bot_text["sub_link"], str.encode("sr_vl:" + str(username))),
+        #     Button.inline(bot_text["outline"], str.encode("sr_ot:" + str(username)))
+        # ],
     ]
     await event.reply(full_text, buttons=keys)
 
 
+@bot.on(events.CallbackQuery(pattern="sr_pep:*"))
+async def connected_pep(event):
+    user_id = event.sender_id
+
+    is_ban = config.is_ban(user_id)
+
+    if is_ban:
+        await event.reply(bot_text["you_banned"])
+
+        return
+
+    username = int(event.data.decode().split(":")[1])
+
+
+    url = f"{config.API_ADDRESS}client-info?username={username}"
+    r = await event.reply("درحال دریافت اطلاعات...")
+    response = requests.get(url)
+    await bot.delete_messages(user_id, r.id)
+    response = response.json()
+    used_devices = response["info"]["used_devices"]
+    if len(used_devices) == 0:
+        await event.reply(bot_text["not_connected_pep"])
+        return
+    buttons = []
+    for device in used_devices:
+        os = device["os"]
+        model = device["model"]
+        btn = [
+            [
+                Button.inline(os, b'os'),
+            ],
+            [
+                Button.inline(model, b'model')
+            ]
+        ]
+        buttons.append(btn)
+        sep = [
+            Button.inline("➖➖➖➖➖➖➖", b'sep')
+        ]
+        buttons.append(sep)
+    await event.reply(bot_text["connected_pep"], buttons=buttons)
 # @bot.on(events.CallbackQuery(pattern="change_service_to_iphone:*"))
 # async def change_service_to_iphone(event):
 #     user_id = event.sender_id
