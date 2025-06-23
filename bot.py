@@ -3691,7 +3691,7 @@ async def connected_pep(event):
 
         return
 
-    username = int(event.data.decode().split(":")[1])
+    username = event.data.decode().split(":")[1]
 
 
     url = f"{config.API_ADDRESS}client-info?username={username}"
