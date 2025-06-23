@@ -3652,7 +3652,7 @@ async def serv_info_get(event):
     data_limit = config.data_limits[service_num]
     used_traffic = response["info"]["used_traffic"]
     full_text = f"""
-وضعیت سرویس : {status}
+وضعیت سرویس : {is_active}
 
 🗂 نام محصول :{service_name}
 
