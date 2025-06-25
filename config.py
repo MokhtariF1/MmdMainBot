@@ -28,7 +28,7 @@ else:
     BOT_TOKEN = "6383493043:AAG3I_ZMgdNQw97BR78r_EtBH55xtI5frLY"
     API_ID = 28482138
     API_HASH = "cdcd9c0f111f85feaafac50d1bc3d6a5"
-    PROXY = False
+    PROXY = True
     ADMINS_LIST = [5415792594]
     CART = 6037697642714478
     merchant = "zibal"
@@ -354,12 +354,6 @@ https://testflight.apple.com/join/FQkEGDfX
 لینک اشتراک : {sub_link}
 """,
     "user_info_panel": "اطلاعات کاربر",
-    "user_info_content": """نام کاربری فرد : {username}
-نام فرد: {user_name}
-شماره فرد : {user_phone}
-موجودی فرد : {user_inventory}
-تعداد اشتراک: {service_count}
-""",
     "down_inventory": "کم کردن موجودی",
     "up_inventory": "افزایش موجودی",
     "su_down": "موجودی مورد نظر با موفقیت از حساب کاربر کم شد✅",

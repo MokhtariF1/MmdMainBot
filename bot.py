@@ -615,17 +615,15 @@ async def message(event):
                                 ]
 
                             ]
-
-                            await bot.send_message(user_id,
-                                                   bot_text["user_info_content"].format(user_name=user_full_name,
-                                                                                        username=username_,
-                                                                                        user_phone=user_phone,
-                                                                                        user_inventory=user_inventory,
-                                                                                        service_count=service_count_,
-                                                                                        user_type=user_type,
-                                                                                        rep_code=rep_code,
-                                                                                        ),
-                                                   buttons=keys_user_info),
+                            txt = bot_text["user_info_content"].format(user_name=user_full_name,
+                                                                       username=username_,
+                                                                       user_phone=user_phone,
+                                                                       user_inventory=user_inventory,
+                                                                       service_count=service_count_,
+                                                                       user_type=user_type,
+                                                                       rep_code=rep_code, )
+                            print(txt)
+                            await bot.send_message(user_id, txt, buttons=keys_user_info)
 
                             break
 
@@ -4932,6 +4930,7 @@ async def up_inventory(event):
     ]
     await event.reply(bot_text["select_pay_type"], buttons=buttons)
 
+
 @bot.on(events.CallbackQuery(pattern="convert_to_rep:*"))
 async def convert_to_rep(event):
     user_id = event.sender_id
@@ -4947,4 +4946,6 @@ async def convert_to_rep(event):
             cur.execute(f"UPDATE users SET rep_code='{rep_code}' AND user_type='rep' WHERE user_id = {user_id}")
             db.commit()
             await event.reply(bot_text["success_rep"].format(rep=rep_code))
+
+
 bot.run_until_disconnected()
