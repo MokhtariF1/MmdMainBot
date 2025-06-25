@@ -28,7 +28,7 @@ else:
     BOT_TOKEN = "6383493043:AAG3I_ZMgdNQw97BR78r_EtBH55xtI5frLY"
     API_ID = 28482138
     API_HASH = "cdcd9c0f111f85feaafac50d1bc3d6a5"
-    PROXY = True
+    PROXY = False
     ADMINS_LIST = [5415792594]
     CART = 6037697642714478
     merchant = "zibal"
