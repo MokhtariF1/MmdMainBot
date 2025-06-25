@@ -1,4 +1,6 @@
 import os
+import random
+import string
 from calendar import month
 
 from telethon import TelegramClient, events, Button, connection
@@ -596,7 +598,9 @@ async def message(event):
                             service_count = cur.execute(f"SELECT * FROM services WHERE user_id = {user_id_}").fetchall()
 
                             service_count_ = len(service_count)
-
+                            group = find_user[7]
+                            user_type = "عادی" if group == "normal" else "نماینده"
+                            rep_code = find_user[8]
                             keys_user_info = [
 
                                 [
@@ -604,6 +608,10 @@ async def message(event):
                                     Button.inline(bot_text["user_services"],
                                                   str.encode("user_services:" + str(user_id_)))
 
+                                ],
+                                [
+                                    Button.inline(bot_text["convert_to_rep"],
+                                                  str.encode("connected_to_rep:" + str(find_user[0])))
                                 ]
 
                             ]
@@ -613,7 +621,10 @@ async def message(event):
                                                                                         username=username_,
                                                                                         user_phone=user_phone,
                                                                                         user_inventory=user_inventory,
-                                                                                        service_count=service_count_),
+                                                                                        service_count=service_count_,
+                                                                                        user_type=user_type,
+                                                                                        rep_code=rep_code,
+                                                                                        ),
                                                    buttons=keys_user_info)
 
                             break
@@ -3693,7 +3704,6 @@ async def connected_pep(event):
 
     username = event.data.decode().split(":")[1]
 
-
     url = f"{config.API_ADDRESS}client-info?username={username}"
     r = await event.reply("درحال دریافت اطلاعات...")
     response = requests.get(url)
@@ -3721,6 +3731,8 @@ async def connected_pep(event):
         ]
         buttons.append(sep)
     await event.reply(bot_text["connected_pep"], buttons=buttons)
+
+
 # @bot.on(events.CallbackQuery(pattern="change_service_to_iphone:*"))
 # async def change_service_to_iphone(event):
 #     user_id = event.sender_id
@@ -4920,5 +4932,19 @@ async def up_inventory(event):
     ]
     await event.reply(bot_text["select_pay_type"], buttons=buttons)
 
-
+@bot.on(events.CallbackQuery(pattern="convert_to_rep:*"))
+async def convert_to_rep(event):
+    user_id = event.sender_id
+    find_user = cur.execute(f"SELECT * FROM users WHERE user_id = '{user_id}'").fetchone()
+    if find_user is None:
+        await event.reply(bot_text["user_not_found"])
+    else:
+        group = find_user[7]
+        if group != 'normal':
+            await event.reply(bot_text["before_rep"])
+        else:
+            rep_code = "".join(random.choices(string.ascii_letters, k=20))
+            cur.execute(f"UPDATE users SET rep_code={rep_code} AND user_type='rep' WHERE user_id = '{user_id}'")
+            con.commit()
+            await event.reply(bot_text["success_rep"].format(rep_code=rep_code))
 bot.run_until_disconnected()
