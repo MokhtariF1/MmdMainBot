@@ -625,7 +625,7 @@ async def message(event):
                                                                                         user_type=user_type,
                                                                                         rep_code=rep_code,
                                                                                         ),
-                                                   buttons=keys_user_info)
+                                                   buttons=keys_user_info),
 
                             break
 
