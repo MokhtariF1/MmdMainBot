@@ -4944,7 +4944,7 @@ async def convert_to_rep(event):
             await event.reply(bot_text["before_rep"])
         else:
             rep_code = "".join(random.choices(string.ascii_letters, k=20))
-            cur.execute(f"UPDATE users SET rep_code={rep_code} AND user_type='rep' WHERE user_id = {user_id}")
+            cur.execute(f"UPDATE users SET rep_code='{rep_code}' AND user_type='rep' WHERE user_id = {user_id}")
             con.commit()
             await event.reply(bot_text["success_rep"].format(rep_code=rep_code))
 bot.run_until_disconnected()
