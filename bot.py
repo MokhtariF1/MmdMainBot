@@ -611,7 +611,7 @@ async def message(event):
                                 ],
                                 [
                                     Button.inline(bot_text["convert_to_rep"],
-                                                  str.encode("connected_to_rep:" + str(find_user[0])))
+                                                  str.encode("convert_to_rep:" + str(find_user[0])))
                                 ]
 
                             ]
