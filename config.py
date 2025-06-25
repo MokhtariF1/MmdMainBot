@@ -343,6 +343,7 @@ https://testflight.apple.com/join/FQkEGDfX
 تعداد اشتراک: {service_count}
 نوع اکانت: {user_type}
 کد نماینده: {rep_code}
+
 """,
     "admin_service_notif_iphone": """نام اشتراک خریداری شده : {service_name}
 نام فرد : {user_name} 

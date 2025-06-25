@@ -4935,7 +4935,7 @@ async def up_inventory(event):
 @bot.on(events.CallbackQuery(pattern="convert_to_rep:*"))
 async def convert_to_rep(event):
     user_id = event.sender_id
-    find_user = cur.execute(f"SELECT * FROM users WHERE user_id = '{user_id}'").fetchone()
+    find_user = cur.execute(f"SELECT * FROM users WHERE user_id = {user_id}").fetchone()
     if find_user is None:
         await event.reply(bot_text["user_not_found"])
     else:
@@ -4944,7 +4944,7 @@ async def convert_to_rep(event):
             await event.reply(bot_text["before_rep"])
         else:
             rep_code = "".join(random.choices(string.ascii_letters, k=20))
-            cur.execute(f"UPDATE users SET rep_code={rep_code} AND user_type='rep' WHERE user_id = '{user_id}'")
+            cur.execute(f"UPDATE users SET rep_code={rep_code} AND user_type='rep' WHERE user_id = {user_id}")
             con.commit()
             await event.reply(bot_text["success_rep"].format(rep_code=rep_code))
 bot.run_until_disconnected()
