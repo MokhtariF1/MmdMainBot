@@ -3467,12 +3467,16 @@ async def yes_wallet(event):
         return
 
     service_num = int(event.data.decode().split(":")[1])
-
-    amount = config.amounts[service_num]
+    user = cur.execute(f"SELECT inventory,group FROM users WHERE user_id={user_id}").fetchone()
+    group = user[1]
+    if group == 'normal':
+        amount = config.amounts[service_num]
+    else:
+        amount = config.amounts[service_num] // 2
 
     await bot.delete_messages(user_id, msg_id)
 
-    user_inventory = cur.execute(f"SELECT inventory FROM users WHERE user_id={user_id}").fetchone()[0]
+    user_inventory = user[0]
 
     user_inventory = int(user_inventory) - int(amount)
 
