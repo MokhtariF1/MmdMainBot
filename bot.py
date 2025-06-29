@@ -266,9 +266,9 @@ async def start(event):
 
             access_code = randint(100, 999)
 
-            data = (user_id, 0, None, False, False, access_code, True)
+            data = (user_id, 0, None, False, False, access_code, True, 'normal', None, False)
 
-            cur.execute(f"INSERT INTO users VALUES (?,?,?,?,?,?,?)", data)
+            cur.execute(f"INSERT INTO users VALUES (?,?,?,?,?,?,?,?,?)", data)
 
             db.commit()
 
